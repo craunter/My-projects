@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 💖</title>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #ffb6c1, #ffc0cb);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 360px;
+  padding: 20px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px; /* bigger gap */
+  margin-top: 20px;
+  position: relative;
+  height: 60px;
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+#yesBtn {
+  background: #ff4d6d;
+  color: white;
+}
+
+#noBtn {
+  background: white;
+  color: #ff4d6d;
+}
+
+.hidden { display: none; }
+
+/* 💖 HEART */
+.heart {
+  position: absolute;
+  font-size: 18px;
+  animation: heartExplode 1s ease-out forwards;
+}
+
+@keyframes heartExplode {
+  0% { transform: translate(0,0); opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)); opacity: 0; }
+}
+
+/* 🚀 Rocket */
+.rocket {
+  position: absolute;
+  width: 4px;
+  height: 20px;
+  background: white;
+  bottom: 0;
+  animation: launch 0.8s linear forwards;
+}
+
+@keyframes launch {
+  to { transform: translateY(-70vh); }
+}
+
+/* 🎆 Particles */
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgb(236, 5, 5);
+  border-radius: 50%;
+  animation: explode 1s ease-out forwards;
+}
+
+@keyframes explode {
+  100% { transform: translate(var(--x), var(--y)); opacity: 0; }
+}
+
+input {
+  padding: 12px;
+  width: 90%;
+  border-radius: 20px;
+  border: none;
+  margin-top: 15px;
+  text-align: center; 
+  margin-bottom: 20px;
+  
+} 
+#page3 {
+  background: linear-gradient(135deg, #ff9eb5, #ffb6c1);
+  border-radius: 20px;
+  padding: 30px 20px;
+  box-shadow: 0 10px 25px rgba(255, 105, 135, 0.3);
+} 
+#page3 h1 {
+  animation: pop 0.5s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="page1">
+  <h1>🌸 A Safety Measure 💌</h1>
+  <p>Ankita ji Instagram may ban anytime... why take risk 😉</p>
+  <h3>Can I get your number?</h3>
+
+  <div class="buttons">
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 😜</button>
+  </div>
+</div>
+
+<div class="container hidden" id="page2">
+  <h1>Great Choice 😍🎉</h1>
+  <input type="tel" id="numberInput" maxlength="10" placeholder="Enter 10 digit number">
+  <br>
+  <button onclick="submitNumber()">Submit</button>
+</div> 
+<div class="container hidden" id="page3">
+  <h1>💖 Thank You Madam Ji 😍</h1>
+  <p>Your number is safely stored with me now 😉</p>
+  <p>Mission successful 💌</p>
+
+  <div style="font-size:24px; margin-top:15px;">
+    🌸💖🌸💖🌸
+  </div>
+</div>
+
+<script>
+(function(){
+  emailjs.init("6eR2S8KwylazFDSCp");
+})();
+
+let noBtn = document.getElementById("noBtn");
+let yesBtn = document.getElementById("yesBtn");
+let attempts = 0;
+
+noBtn.addEventListener("click", () => {
+  attempts++;
+
+  // resize
+  yesBtn.style.transform = `scale(${1 + attempts * 0.1})`;
+  noBtn.style.transform = `scale(${1 - attempts * 0.1})`;
+
+  let parent = document.querySelector(".buttons");
+
+  let yesRect = yesBtn.getBoundingClientRect();
+  let parentRect = parent.getBoundingClientRect();
+
+  let safeGap = 80; // 🔥 ensures distance from YES
+
+  let leftLimit = 0;
+  let rightLimit = parent.clientWidth - noBtn.offsetWidth;
+
+  let newX;
+
+  // randomly choose LEFT or RIGHT of YES
+  if (Math.random() > 0.5) {
+    newX = Math.max(leftLimit, (yesRect.left - parentRect.left) - safeGap);
+  } else {
+    newX = Math.min(rightLimit, (yesRect.right - parentRect.left) + safeGap);
+  }
+
+  noBtn.style.position = "absolute";
+  noBtn.style.left = newX + "px";
+  noBtn.style.top = "10px"; // fixed vertical
+
+  if (attempts >= 5) {
+    noBtn.style.display = "none";
+    yesBtn.style.transform = "scale(1.6)";
+  }
+});
+
+// 💖 YES
+yesBtn.addEventListener("click", () => {
+  document.getElementById("page1").classList.add("hidden");
+  document.getElementById("page2").classList.remove("hidden");
+
+  skyFireworks();
+});
+
+// 💖 + 🎆 EFFECT
+function skyFireworks() {
+  let cx = window.innerWidth / 2;
+  let cy = window.innerHeight / 2;
+
+  // hearts
+  for (let i = 0; i < 25; i++) {
+    let h = document.createElement("div");
+    h.className = "heart";
+    h.innerHTML = "💖";
+    h.style.left = cx + "px";
+    h.style.top = cy + "px";
+
+    let angle = Math.random() * 2 * Math.PI;
+    let r = Math.random() * 120;
+
+    h.style.setProperty("--x", Math.cos(angle)*r+"px");
+    h.style.setProperty("--y", Math.sin(angle)*r+"px");
+
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),1000);
+  }
+
+  setTimeout(()=>{
+    for (let i = 0; i < 4; i++) {
+      let rocket = document.createElement("div");
+      rocket.className = "rocket";
+      let x = Math.random()*window.innerWidth;
+      rocket.style.left = x+"px";
+      document.body.appendChild(rocket);
+
+      setTimeout(()=>{
+        rocket.remove();
+
+        for (let j = 0; j < 25; j++) {
+          let p = document.createElement("div");
+          p.className = "particle";
+          p.style.left = x+"px";
+          p.style.top = "30vh";
+
+          let a = Math.random()*2*Math.PI;
+          let r = Math.random()*120;
+
+          p.style.setProperty("--x", Math.cos(a)*r+"px");
+          p.style.setProperty("--y", Math.sin(a)*r+"px");
+
+          document.body.appendChild(p);
+          setTimeout(()=>p.remove(),1000);
+        }
+      },800);
+    }
+  },900);
+}
+
+// input restriction
+let input = document.getElementById("numberInput");
+input.addEventListener("input", () => {
+  input.value = input.value.replace(/\D/g,"").slice(0,10);
+});
+
+// email
+function submitNumber() {
+  let num = input.value;
+
+  if (num.length !== 10) {
+    alert("Enter valid number 😒");
+    return;
+  }
+
+  emailjs.send("service_pu592kb","template_h1oeolk",{
+    number: num,
+    name: "Ankita" 
+
+  }).then((res) => {
+    console.log("SUCCESS", res);
+
+    document.getElementById("page2").classList.add("hidden");
+    document.getElementById("page3").classList.remove("hidden");
+
+    skyFireworks();
+
+  }).catch((err) => {
+    console.log("ERROR", err);   // 👈 THIS WILL TELL EXACT ISSUE
+    alert("Error 😢 Check console");
+  });
+}
+</script>
+
+</body>
+</html>
