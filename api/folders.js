@@ -2,19 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = (req, res) => {
-  const basePath = path.join(__dirname, '..'); // 🔥 FIXED PATH
-
-  const items = fs.readdirSync(basePath, { withFileTypes: true });
-
-  const folders = items
-    .filter(item =>
-      item.isDirectory() &&
-      !item.name.startsWith('.') &&
-      !item.name.startsWith('_') &&
-      item.name !== 'api' &&
-      item.name !== 'node_modules'
-    )
-    .map(item => item.name);
-
+  const filePath = path.join(process.cwd(), 'api', 'folders.json'); // ✅ FIXED PATH
+  const folders = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
   res.status(200).json(folders);
 };
