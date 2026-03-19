@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayush Hub</title>
+
+<style>
+body{
+    margin:0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    text-align:center;
+}
+
+h1{
+    margin-top:40px;
+    font-size:2.5rem;
+}
+
+span{
+    color:#00ffd5;
+}
+
+/* GRID */
+.container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+    padding:40px;
+}
+
+/* CARD */
+.card{
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(15px);
+    padding:30px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-10px) scale(1.05);
+    background:rgba(255,255,255,0.1);
+}
+
+.footer{
+    margin-top:20px;
+    opacity:0.7;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Created by <span>Ayush</span> 🚀</h1>
+
+<div class="container" id="folders"></div>
+
+<div class="footer">Click any folder to open</div>
+
+<script>
+async function loadFolders(){
+    const res = await fetch('/api/folders');
+    const folders = await res.json();
+
+    const container = document.getElementById('folders');
+
+    folders.forEach(folder => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerText = folder;
+        div.onclick = () => {
+            window.location.href = '/' + folder;
+        };
+        container.appendChild(div);
+    });
+}
+
+loadFolders();
+</script>
+
+</body>
+</html>
