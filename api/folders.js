@@ -1,14 +1,19 @@
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
-export default function handler(req, res) {
-  const basePath = path.join(process.cwd());
-  
+module.exports = (req, res) => {
+  const basePath = process.cwd();
+
   const items = fs.readdirSync(basePath, { withFileTypes: true });
 
   const folders = items
-    .filter(item => item.isDirectory() && item.name !== 'api' && item.name !== '.vercel')
+    .filter(item =>
+      item.isDirectory() &&
+      item.name !== 'api' &&
+      item.name !== '.vercel' &&
+      item.name !== 'node_modules'
+    )
     .map(item => item.name);
 
   res.status(200).json(folders);
-}
+};
