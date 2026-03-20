@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moving Tic Tac Toe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --x-color: #a78bfa;
+      --o-color: #34d399;
+      --bg1: #0f0c29;
+      --bg2: #302b63;
+      --bg3: #24243e;
+      --glass-bg: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.15);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      --highlight: #f9a825;
+      --text: #e2e8f0;
+      --subtext: #94a3b8;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+      background-size: 400% 400%;
+      animation: bgShift 12s ease infinite;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    @keyframes bgShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.25;
+      pointer-events: none;
+      animation: floatBlob 18s ease-in-out infinite alternate;
+    }
+    .blob1 { width: 420px; height: 420px; background: #7c3aed; top: -100px; left: -100px; }
+    .blob2 { width: 350px; height: 350px; background: #059669; bottom: -80px; right: -80px; animation-delay: -7s; }
+    .blob3 { width: 280px; height: 280px; background: #2563eb; top: 50%; left: 60%; animation-delay: -14s; }
+
+    @keyframes floatBlob {
+      0%   { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 40px) scale(1.1); }
+    }
+
+    /* =========== SCREENS =========== */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.95);
+    }
+
+    /* Glass Card */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      border-radius: 24px;
+    }
+
+    /* =========== MODE SELECT SCREEN =========== */
+    #mode-screen .card {
+      padding: 52px 48px;
+      text-align: center;
+      max-width: 440px;
+      width: 90vw;
+    }
+
+    .logo {
+      font-size: 3.2rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--x-color), var(--o-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+
+    .tagline {
+      color: var(--subtext);
+      font-size: 0.95rem;
+      font-weight: 300;
+      margin-bottom: 40px;
+      letter-spacing: 0.5px;
+    }
+
+    .mode-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      width: 100%;
+      padding: 18px 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.07);
+      border-radius: 16px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .mode-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--x-color), var(--o-color));
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .mode-btn:hover::before { opacity: 0.15; }
+    .mode-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      border-color: rgba(255,255,255,0.3);
+    }
+    .mode-btn:active { transform: translateY(0px) scale(0.98); }
+    .mode-btn .icon { font-size: 1.6rem; position: relative; z-index: 1; }
+    .mode-btn span { position: relative; z-index: 1; }
+
+    .rules-hint {
+      margin-top: 28px;
+      padding: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      text-align: left;
+    }
+    .rules-hint h3 { font-size: 0.8rem; letter-spacing: 1.5px; color: var(--highlight); text-transform: uppercase; margin-bottom: 10px; }
+    .rules-hint p { font-size: 0.82rem; color: var(--subtext); line-height: 1.6; }
+
+    /* =========== GAME SCREEN =========== */
+    #game-screen .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      width: 100%;
+      max-width: 560px;
+      padding: 20px;
+    }
+
+    .game-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .back-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: var(--subtext);
+      font-size: 0.85rem;
+      font-family: 'Outfit', sans-serif;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.14); color: var(--text); }
+
+    .game-title-small {
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--x-color), var(--o-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Scoreboard */
+    .scoreboard {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+    .score-card {
+      flex: 1;
+      padding: 14px 16px;
+      text-align: center;
+      border-radius: 16px;
+      transition: all 0.3s;
+    }
+    .score-card.active-player {
+      box-shadow: 0 0 20px rgba(167,139,250,0.3), 0 0 0 1px rgba(167,139,250,0.4);
+      transform: scale(1.02);
+    }
+    .score-card.active-player.is-o {
+      box-shadow: 0 0 20px rgba(52,211,153,0.3), 0 0 0 1px rgba(52,211,153,0.4);
+    }
+    .score-label {
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--subtext);
+      margin-bottom: 4px;
+    }
+    .score-symbol {
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .score-symbol.x { color: var(--x-color); }
+    .score-symbol.o { color: var(--o-color); }
+    .score-wins { font-size: 1.4rem; font-weight: 700; }
+
+    /* Status bar */
+    .status-bar {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .status-bar .phase-badge {
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.1);
+      color: var(--subtext);
+    }
+    .status-bar .phase-badge.move { background: rgba(249,168,37,0.15); color: var(--highlight); }
+
+    /* Board */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(6px, 2vw, 14px);
+      width: 100%;
+    }
+    .cell {
+      aspect-ratio: 1;
+      border-radius: clamp(12px, 2.5vw, 20px);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+      padding: 4px;
+    }
+    .cell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 0.2s;
+    }
+    .cell:hover:not(.filled):not(.disabled) {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.25);
+      transform: scale(1.04);
+    }
+    .cell:hover:not(.filled):not(.disabled)::after { background: rgba(255,255,255,0.04); }
+    .cell.filled { cursor: default; }
+    .cell.disabled { cursor: not-allowed; }
+
+    .cell .symbol {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(2rem, 7vw, 3.4rem);
+      font-weight: 900;
+      line-height: 1;
+      transition: transform 0.15s ease;
+    }
+    .cell.x-cell .symbol { color: var(--x-color); }
+    .cell.o-cell .symbol { color: var(--o-color); }
+
+    /* Ordinal label inside cell (1st / 2nd / 3rd) */
+    .cell .ordinal {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(0.55rem, 1.6vw, 0.72rem);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      opacity: 0.6;
+      line-height: 1;
+    }
+    .cell.x-cell .ordinal { color: var(--x-color); }
+    .cell.o-cell .ordinal { color: var(--o-color); }
+
+    /* Winning cells */
+    .cell.win-cell {
+      animation: winGlow 1s ease infinite alternate;
+      border-color: var(--highlight);
+      background: rgba(249,168,37,0.12);
+    }
+    @keyframes winGlow {
+      0%  { box-shadow: 0 0 12px rgba(249,168,37,0.5); }
+      100%{ box-shadow: 0 0 30px rgba(249,168,37,0.9), 0 0 60px rgba(249,168,37,0.3); }
+    }
+
+    /* Selected cell (movement phase) */
+    .cell.selected {
+      border-color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.12);
+      transform: scale(1.06);
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+    .cell.x-cell.selected { border-color: var(--x-color); box-shadow: 0 0 20px rgba(167,139,250,0.5); }
+    .cell.o-cell.selected { border-color: var(--o-color); box-shadow: 0 0 20px rgba(52,211,153,0.5); }
+
+    /* Move target hint */
+    .cell.move-target:not(.filled):hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.4);
+    }
+    .cell.move-target:not(.filled)::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+      animation: pulseTarget 1.2s ease infinite;
+    }
+    @keyframes pulseTarget {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* Piece placement drop animation */
+    @keyframes dropIn {
+      0%  { opacity: 0; transform: scale(0.3) rotate(-15deg); }
+      70% { transform: scale(1.15) rotate(5deg); }
+      100%{ opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    .cell .symbol.animate { animation: dropIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+    /* Next-to-move indicator */
+    .cell.next-to-move {
+      border-color: rgba(255,255,255,0.35);
+      box-shadow: 0 0 14px rgba(255,255,255,0.15) inset;
+    }
+    .cell.x-cell.next-to-move { border-color: rgba(167,139,250,0.6); box-shadow: 0 0 14px rgba(167,139,250,0.2) inset; }
+    .cell.o-cell.next-to-move { border-color: rgba(52,211,153,0.6); box-shadow: 0 0 14px rgba(52,211,153,0.2) inset; }
+
+    /* Restart btn */
+    .restart-btn {
+      padding: 13px 32px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .restart-btn:hover {
+      background: rgba(255,255,255,0.14);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .restart-btn:active { transform: scale(0.97); }
+
+    /* Win overlay */
+    #win-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(8px);
+      animation: fadeIn 0.4s ease;
+    }
+    #win-overlay.hidden { display: none; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .win-card {
+      padding: 48px 52px;
+      text-align: center;
+      max-width: 380px;
+      width: 88vw;
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn {
+      0%  { transform: scale(0.6); opacity: 0; }
+      100%{ transform: scale(1); opacity: 1; }
+    }
+    .win-emoji { font-size: 3.5rem; margin-bottom: 12px; }
+    .win-msg { font-size: 2rem; font-weight: 900; margin-bottom: 6px; }
+    .win-sub { color: var(--subtext); font-size: 0.95rem; margin-bottom: 28px; }
+    .win-actions { display: flex; gap: 12px; justify-content: center; }
+    .win-btn {
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .win-btn:hover { background: rgba(255,255,255,0.16); transform: translateY(-2px); }
+    .win-btn.primary {
+      background: linear-gradient(135deg, rgba(167,139,250,0.4), rgba(52,211,153,0.4));
+      border-color: rgba(167,139,250,0.4);
+    }
+
+    /* Move order indicator */
+    .move-order-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--subtext);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .move-order-row .mo-chip {
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.75rem;
+      transition: all 0.3s;
+    }
+    .move-order-row .mo-chip.active { background: rgba(249,168,37,0.2); border-color: var(--highlight); color: var(--highlight); }
+    .move-order-row .mo-chip.x { color: var(--x-color); }
+    .move-order-row .mo-chip.o { color: var(--o-color); }
+
+    /* AI thinking */
+    .ai-thinking {
+      font-size: 0.8rem;
+      color: var(--o-color);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .ai-thinking.show { opacity: 1; animation: blink 0.7s ease infinite alternate; }
+    @keyframes blink { from { opacity: 0.4; } to { opacity: 1; } }
+
+    @media (max-width: 600px) {
+      #game-screen .wrapper { padding: 10px; gap: 10px; }
+      .scoreboard { gap: 8px; }
+      .score-card { padding: 10px 8px; }
+      .score-symbol { font-size: 1.3rem; }
+      .score-wins { font-size: 1.1rem; }
+      .score-label { font-size: 0.65rem; }
+      .status-bar { padding: 10px 12px; font-size: 0.82rem; min-height: 44px; }
+      .win-card { padding: 28px 20px; }
+      .win-msg { font-size: 1.6rem; }
+      .game-title-small { font-size: 0.9rem; }
+      .back-btn, .restart-btn { font-size: 0.75rem !important; padding: 6px 12px !important; }
+    }
+    @media (max-width: 400px) {
+      .cell .symbol { font-size: clamp(1.6rem, 9vw, 2.4rem); }
+      .cell .ordinal { font-size: clamp(0.5rem, 2.2vw, 0.65rem); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floating blobs -->
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<!-- ===================== MODE SELECT ===================== -->
+<div class="screen" id="mode-screen">
+  <div class="glass card">
+    <div class="logo">Moving TTT</div>
+    <div class="tagline">Strategy Tic Tac Toe — move your pieces to win</div>
+
+    <button class="mode-btn" id="btn-friend">
+      <span class="icon">👥</span>
+      <span>Play with Friend</span>
+    </button>
+    <button class="mode-btn" id="btn-ai">
+      <span class="icon">🤖</span>
+      <span>Play with Computer</span>
+    </button>
+
+    <div class="rules-hint">
+      <h3>How to Play</h3>
+      <p>
+        Each player places <strong>3 pieces</strong> → then enters the <strong>movement phase</strong>.<br>
+        Move pieces in the order you placed them. First to get 3-in-a-row wins!
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== GAME SCREEN ===================== -->
+<div class="screen hidden" id="game-screen">
+  <div class="wrapper">
+    <!-- Header -->
+    <div class="game-header">
+      <button class="back-btn" id="back-btn">← Menu</button>
+      <div class="game-title-small">Moving TTT</div>
+      <button class="restart-btn" id="restart-btn" style="padding:8px 16px;font-size:0.85rem;">↺ Restart</button>
+    </div>
+
+    <!-- Scoreboard -->
+    <div class="scoreboard">
+      <div class="glass score-card" id="score-x">
+        <div class="score-label">Player</div>
+        <div class="score-symbol x">✕</div>
+        <div class="score-wins" id="x-wins">0</div>
+      </div>
+      <div style="flex:1.5;">
+        <div class="glass status-bar" id="status-bar">
+          <span id="status-text">X's turn</span>
+          <span class="phase-badge" id="phase-badge">Place</span>
+        </div>
+        <div class="ai-thinking" id="ai-thinking">🤖 Computer thinking…</div>
+      </div>
+      <div class="glass score-card" id="score-o">
+        <div class="score-label" id="o-label">Computer</div>
+        <div class="score-symbol o">○</div>
+        <div class="score-wins" id="o-wins">0</div>
+      </div>
+    </div>
+
+    <!-- Board -->
+    <div class="board" id="board">
+      <!-- 9 cells generated by JS -->
+    </div>
+
+    <!-- Move order indicator (movement phase only) -->
+    <div id="move-order-row" class="move-order-row" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- ===================== WIN OVERLAY ===================== -->
+<div id="win-overlay" class="hidden">
+  <div class="glass win-card">
+    <div class="win-emoji" id="win-emoji">🎉</div>
+    <div class="win-msg" id="win-msg">Player X Wins!</div>
+    <div class="win-sub" id="win-sub">What a strategic move!</div>
+    <div class="win-actions">
+      <button class="win-btn" id="win-menu-btn">Menu</button>
+      <button class="win-btn primary" id="win-restart-btn">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== GAME STATE =====================
+const WINS = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+let state = {
+  mode: null,        // 'friend' | 'ai'
+  board: Array(9).fill(null),
+  turn: 'X',
+  phase: 'place',    // 'place' | 'move'
+  placedX: [],       // indices in placement order
+  placedO: [],
+  moveIdxX: 0,       // which piece in placedX is next to move
+  moveIdxO: 0,
+  selected: null,    // index of selected cell in move phase
+  gameOver: false,
+  scores: { X: 0, O: 0 },
+  aiTurn: false,
+};
+
+// ===================== DOM REFS =====================
+const modeScreen   = document.getElementById('mode-screen');
+const gameScreen   = document.getElementById('game-screen');
+const boardEl      = document.getElementById('board');
+const statusText   = document.getElementById('status-text');
+const phaseBadge   = document.getElementById('phase-badge');
+const xWinsEl      = document.getElementById('x-wins');
+const oWinsEl      = document.getElementById('o-wins');
+const scoreX       = document.getElementById('score-x');
+const scoreO       = document.getElementById('score-o');
+const oLabel       = document.getElementById('o-label');
+const moveOrderRow = document.getElementById('move-order-row');
+const aiThinking   = document.getElementById('ai-thinking');
+const winOverlay   = document.getElementById('win-overlay');
+const winEmoji     = document.getElementById('win-emoji');
+const winMsg       = document.getElementById('win-msg');
+const winSub       = document.getElementById('win-sub');
+
+// ===================== INIT =====================
+function initBoard() {
+  boardEl.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.id = `cell-${i}`;
+    cell.dataset.idx = i;
+    cell.addEventListener('click', () => handleCellClick(i));
+    boardEl.appendChild(cell);
+  }
+}
+
+function startGame(mode) {
+  state.mode = mode;
+  state.board = Array(9).fill(null);
+  state.turn = 'X';
+  state.phase = 'place';
+  state.placedX = [];
+  state.placedO = [];
+  state.moveIdxX = 0;
+  state.moveIdxO = 0;
+  state.selected = null;
+  state.gameOver = false;
+  state.aiTurn = false;
+
+  oLabel.textContent = mode === 'ai' ? 'Computer' : 'Player';
+
+  modeScreen.classList.add('hidden');
+  gameScreen.classList.remove('hidden');
+  winOverlay.classList.add('hidden');
+  moveOrderRow.style.display = 'none';
+
+  xWinsEl.textContent = state.scores.X;
+  oWinsEl.textContent = state.scores.O;
+
+  initBoard();
+  render();
+}
+
+// ===================== HANDLE CLICK =====================
+function handleCellClick(idx) {
+  if (state.gameOver || state.aiTurn) return;
+  if (state.phase === 'place') handlePlace(idx);
+  else handleMove(idx);
+}
+
+function handlePlace(idx) {
+  if (state.board[idx] !== null) return;
+
+  state.board[idx] = state.turn;
+  if (state.turn === 'X') state.placedX.push(idx);
+  else state.placedO.push(idx);
+
+  animateDrop(idx);
+
+  const winner = checkWin(state.board);
+  if (winner) { endGame(winner); return; }
+
+  // Switch turn
+  if (state.turn === 'X') state.turn = 'O';
+  else state.turn = 'X';
+
+  // Check if placement phase is over (both placed 3)
+  if (state.placedX.length === 3 && state.placedO.length === 3) {
+    state.phase = 'move';
+    state.moveIdxX = 0;
+    state.moveIdxO = 0;
+    state.selected = null;
+  }
+
+  render();
+  triggerAIIfNeeded();
+}
+
+function handleMove(idx) {
+  const currentPieces = state.turn === 'X' ? state.placedX : state.placedO;
+  const moveIdx = state.turn === 'X' ? state.moveIdxX : state.moveIdxO;
+  const expectedCell = currentPieces[moveIdx];
+
+  // If nothing selected yet, select the required piece
+  if (state.selected === null) {
+    if (idx === expectedCell) {
+      state.selected = idx;
+      render();
+    }
+    // clicking wrong piece or empty: ignore
+    return;
+  }
+
+  // Piece already selected — now pick destination
+  if (idx === state.selected) {
+    // Deselect
+    state.selected = null;
+    render();
+    return;
+  }
+
+  if (state.board[idx] !== null) {
+    // Clicked an occupied cell: if it's our expected piece, deselect then reselect is handled;
+    // otherwise ignore
+    return;
+  }
+
+  // Move the piece
+  state.board[state.selected] = null;
+  state.board[idx] = state.turn;
+
+  // Update placement list
+  currentPieces[moveIdx] = idx;
+
+  // Advance move index (cycle 0→1→2→0)
+  if (state.turn === 'X') state.moveIdxX = (state.moveIdxX + 1) % 3;
+  else state.moveIdxO = (state.moveIdxO + 1) % 3;
+
+  state.selected = null;
+  animateDrop(idx);
+
+  const winner = checkWin(state.board);
+  if (winner) { endGame(winner); return; }
+
+  state.turn = state.turn === 'X' ? 'O' : 'X';
+  render();
+  triggerAIIfNeeded();
+}
+
+// ===================== AI =====================
+function triggerAIIfNeeded() {
+  if (state.mode !== 'ai' || state.turn !== 'O' || state.gameOver) return;
+  state.aiTurn = true;
+  aiThinking.classList.add('show');
+  setTimeout(() => {
+    if (state.phase === 'place') aiPlace();
+    else aiMove();
+    aiThinking.classList.remove('show');
+    state.aiTurn = false;
+    render();
+  }, 600 + Math.random() * 400);
+}
+
+function getEmptyCells() { return state.board.map((v,i)=>v===null?i:-1).filter(i=>i>=0); }
+
+function aiPlace() {
+  // Try to win
+  let move = findBestPlaceMove('O');
+  if (move === -1) move = findBestPlaceMove('X'); // block
+  if (move === -1) {
+    // Prefer center, then corners
+    const pref = [4, 0, 2, 6, 8, 1, 3, 5, 7];
+    move = pref.find(i => state.board[i] === null) ?? getEmptyCells()[0];
+  }
+
+  state.board[move] = 'O';
+  state.placedO.push(move);
+  animateDrop(move);
+
+  const winner = checkWin(state.board);
+  if (winner) { endGame(winner); return; }
+
+  state.turn = 'X';
+  if (state.placedX.length === 3 && state.placedO.length === 3) {
+    state.phase = 'move';
+    state.moveIdxX = 0;
+    state.moveIdxO = 0;
+    state.selected = null;
+  }
+}
+
+function findBestPlaceMove(player) {
+  const empties = getEmptyCells();
+  for (const idx of empties) {
+    const testBoard = [...state.board];
+    testBoard[idx] = player;
+    if (checkWin(testBoard)) return idx;
+  }
+  return -1;
+}
+
+function aiMove() {
+  const moveIdx = state.moveIdxO;
+  const pieceCell = state.placedO[moveIdx];
+  const empties = getEmptyCells();
+
+  // Try each empty cell with this piece; see if it wins
+  let bestDest = -1;
+  for (const dest of empties) {
+    const testBoard = [...state.board];
+    testBoard[pieceCell] = null;
+    testBoard[dest] = 'O';
+    if (checkWin(testBoard)) { bestDest = dest; break; }
+  }
+
+  // Try to block X: simulate X's next forced move
+  if (bestDest === -1) {
+    const xMoveIdx = state.moveIdxX;
+    const xPieceCell = state.placedX[xMoveIdx];
+    for (const dest of empties) {
+      const testBoard = [...state.board];
+      testBoard[xPieceCell] = null;
+      testBoard[dest] = 'X';
+      if (checkWin(testBoard)) {
+        // X would win moving there. Can we block by going there?
+        if (dest !== xPieceCell) { bestDest = dest; break; }
+      }
+    }
+  }
+
+  // Otherwise pick the move that maximises our winning potential
+  if (bestDest === -1) {
+    let bestScore = -Infinity;
+    for (const dest of empties) {
+      const score = scorePosition(dest, state.board);
+      if (score > bestScore) { bestScore = score; bestDest = dest; }
+    }
+  }
+  if (bestDest === -1) bestDest = empties[Math.floor(Math.random() * empties.length)];
+
+  // Execute move
+  state.board[pieceCell] = null;
+  state.board[bestDest] = 'O';
+  state.placedO[moveIdx] = bestDest;
+  state.moveIdxO = (state.moveIdxO + 1) % 3;
+  animateDrop(bestDest);
+
+  const winner = checkWin(state.board);
+  if (winner) { endGame(winner); return; }
+
+  state.turn = 'X';
+}
+
+function scorePosition(idx, board) {
+  let score = 0;
+  for (const line of WINS) {
+    if (!line.includes(idx)) continue;
+    const vals = line.map(i => board[i]);
+    const os = vals.filter(v=>v==='O').length;
+    const xs = vals.filter(v=>v==='X').length;
+    if (xs === 0) score += os * os;
+    if (os === 0) score -= xs * xs;
+  }
+  // Prefer center and corners
+  if (idx === 4) score += 2;
+  if ([0,2,6,8].includes(idx)) score += 1;
+  return score;
+}
+
+// ===================== WIN CHECK =====================
+function checkWin(board) {
+  for (const [a,b,c] of WINS) {
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return { winner: board[a], line: [a,b,c] };
+    }
+  }
+  return null;
+}
+
+// ===================== END GAME =====================
+function endGame(result) {
+  state.gameOver = true;
+  state.scores[result.winner]++;
+  xWinsEl.textContent = state.scores.X;
+  oWinsEl.textContent = state.scores.O;
+
+  // Highlight winning cells
+  result.line.forEach(i => {
+    document.getElementById(`cell-${i}`).classList.add('win-cell');
+  });
+
+  // Show overlay
+  const isX = result.winner === 'X';
+  winEmoji.textContent = isX ? '🎉' : (state.mode === 'ai' ? '🤖' : '🎊');
+  const winnerName = isX ? 'Player X' : (state.mode === 'ai' ? 'Computer' : 'Player O');
+  winMsg.textContent = `${winnerName} Wins!`;
+  winMsg.style.color = isX ? 'var(--x-color)' : 'var(--o-color)';
+  winSub.textContent = state.phase === 'move'
+    ? 'Brilliant movement strategy!'
+    : 'Decisive placement!';
+
+  setTimeout(() => { winOverlay.classList.remove('hidden'); }, 600);
+}
+
+// ===================== ORDINAL HELPERS =====================
+const ORDINALS = ['1st', '2nd', '3rd'];
+
+function getOrdinalForCell(cellIdx) {
+  // Check X's placed list
+  const xi = state.placedX.indexOf(cellIdx);
+  if (xi !== -1) return { player: 'X', ordinal: ORDINALS[xi] };
+  // Check O's placed list
+  const oi = state.placedO.indexOf(cellIdx);
+  if (oi !== -1) return { player: 'O', ordinal: ORDINALS[oi] };
+  return null;
+}
+
+// ===================== RENDER =====================
+function render() {
+  const currentPieces = state.turn === 'X' ? state.placedX : state.placedO;
+  const moveIdx = state.turn === 'X' ? state.moveIdxX : state.moveIdxO;
+  const nextPiece = state.phase === 'move' ? currentPieces[moveIdx] : null;
+
+  for (let i = 0; i < 9; i++) {
+    const cell = document.getElementById(`cell-${i}`);
+    const val = state.board[i];
+
+    // Reset classes
+    cell.className = 'cell';
+    cell.innerHTML = '';
+
+    if (val) {
+      cell.classList.add('filled', val === 'X' ? 'x-cell' : 'o-cell');
+
+      // Symbol
+      const sym = document.createElement('span');
+      sym.className = 'symbol';
+      sym.textContent = val === 'X' ? '✕' : '○';
+      cell.appendChild(sym);
+
+      // Ordinal label (1st / 2nd / 3rd) — persists through movement phase
+      const info = getOrdinalForCell(i);
+      if (info) {
+        const lbl = document.createElement('span');
+        lbl.className = 'ordinal';
+        lbl.textContent = info.ordinal;
+        cell.appendChild(lbl);
+      }
+    }
+
+    if (state.gameOver) continue;
+
+    // Movement phase highlights
+    if (state.phase === 'move') {
+      if (state.selected !== null) {
+        if (i === state.selected) {
+          cell.classList.add('selected');
+        } else if (!val) {
+          cell.classList.add('move-target');
+        }
+      } else if (i === nextPiece && !state.aiTurn) {
+        cell.classList.add('next-to-move');
+      }
+    }
+
+    // Disabled state
+    if (state.aiTurn) {
+      cell.classList.add('disabled');
+    }
+  }
+
+  // Status bar
+  const playerName = state.turn === 'X' ? 'Player X' : (state.mode === 'ai' ? 'Computer' : 'Player O');
+  if (state.phase === 'place') {
+    statusText.textContent = `${state.turn}'s turn — place`;
+    phaseBadge.textContent = 'Placement Phase';
+    phaseBadge.className = 'phase-badge';
+  } else {
+    const moveIdx = state.turn === 'X' ? state.moveIdxX : state.moveIdxO;
+    if (state.selected === null) {
+      statusText.textContent = state.aiTurn ? 'Computer thinking…' : `${state.turn} — select piece ${moveIdx + 1}`;
+    } else {
+      statusText.textContent = `${state.turn} — pick destination`;
+    }
+    phaseBadge.textContent = 'Movement Phase';
+    phaseBadge.className = 'phase-badge move';
+  }
+
+  // Active player highlight
+  if (state.turn === 'X') {
+    scoreX.classList.add('active-player');
+    scoreO.classList.remove('active-player', 'is-o');
+  } else {
+    scoreO.classList.add('active-player', 'is-o');
+    scoreX.classList.remove('active-player');
+  }
+
+  // Move order indicator
+  if (state.phase === 'move') {
+    moveOrderRow.style.display = 'flex';
+    renderMoveOrder();
+  } else {
+    moveOrderRow.style.display = 'none';
+  }
+}
+
+function renderMoveOrder() {
+  moveOrderRow.innerHTML = '';
+
+  const label = document.createElement('span');
+  label.textContent = 'Move order:';
+  moveOrderRow.appendChild(label);
+
+  const addChips = (pieces, player, currentIdxKey) => {
+    const ci = state[currentIdxKey];
+    pieces.forEach((cellIdx, i) => {
+      const chip = document.createElement('span');
+      chip.className = `mo-chip ${player.toLowerCase()}`;
+      chip.textContent = `${player}(${cellIdx + 1})`;
+      if (state.turn === player && i === ci && !state.gameOver) chip.classList.add('active');
+      moveOrderRow.appendChild(chip);
+    });
+  };
+
+  addChips(state.placedX, 'X', 'moveIdxX');
+  const sep = document.createElement('span');
+  sep.textContent = '|';
+  sep.style.opacity = '0.3';
+  moveOrderRow.appendChild(sep);
+  addChips(state.placedO, 'O', 'moveIdxO');
+}
+
+// ===================== ANIMATION =====================
+function animateDrop(idx) {
+  // Re-render the cell first so ordinal label appears, then animate symbol
+  const cell = document.getElementById(`cell-${idx}`);
+  // Small rAF delay so DOM is updated before we grab the symbol
+  requestAnimationFrame(() => {
+    const sym = cell.querySelector('.symbol');
+    if (sym) { sym.classList.remove('animate'); void sym.offsetWidth; sym.classList.add('animate'); }
+  });
+}
+
+// ===================== RESTART =====================
+function restartGame() {
+  state.board = Array(9).fill(null);
+  state.turn = 'X';
+  state.phase = 'place';
+  state.placedX = [];
+  state.placedO = [];
+  state.moveIdxX = 0;
+  state.moveIdxO = 0;
+  state.selected = null;
+  state.gameOver = false;
+  state.aiTurn = false;
+  winOverlay.classList.add('hidden');
+  moveOrderRow.style.display = 'none';
+  aiThinking.classList.remove('show');
+  initBoard();
+  render();
+}
+
+// ===================== EVENTS =====================
+document.getElementById('btn-friend').addEventListener('click', () => startGame('friend'));
+document.getElementById('btn-ai').addEventListener('click', () => startGame('ai'));
+document.getElementById('restart-btn').addEventListener('click', restartGame);
+document.getElementById('back-btn').addEventListener('click', () => {
+  gameScreen.classList.add('hidden');
+  modeScreen.classList.remove('hidden');
+  winOverlay.classList.add('hidden');
+});
+document.getElementById('win-restart-btn').addEventListener('click', restartGame);
+document.getElementById('win-menu-btn').addEventListener('click', () => {
+  winOverlay.classList.add('hidden');
+  gameScreen.classList.add('hidden');
+  modeScreen.classList.remove('hidden');
+});
+</script>
+</body>
+</html>

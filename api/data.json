@@ -1,5 +1,5 @@
 {
-  "root": ["Ankita", "Ayush", "Anuj"],
+  "root": ["Ankita", "Ayush", "Anuj","Games"],
 
   "Ankita": [],
   "Ayush": [],
@@ -8,5 +8,9 @@
 
   "Anuj/Anuj_bng": [],
   "Anuj/Anuj_ghy": [],
-  "Anuj/Anuj_home": []
+  "Anuj/Anuj_home": [], 
+  
+  "Games": ["tic-tac-toe"],  
+  "Games/tic-tac-toe": []
+
 }
