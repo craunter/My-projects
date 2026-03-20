@@ -55,7 +55,7 @@ span{
 
 <body>
 
-<h1>Created by <span>Ayush</span> 🚀</h1>
+<h1>Projects of <span>Ayush</span> 🚀</h1>
 
 <div class="container" id="folders"></div>
 
@@ -64,13 +64,20 @@ span{
 <script>
 async function loadFolders(){
     try{
-        const res = await fetch('/api/folders');
+        const params = new URLSearchParams(window.location.search);
+        const currentFolder = params.get("folder");
+
+        const url = currentFolder 
+            ? `/api/folders?folder=${currentFolder}` 
+            : `/api/folders`;
+
+        const res = await fetch(url);
         const folders = await res.json();
 
-        console.log("Folders:", folders); // debug
+        console.log("Folders:", folders);
 
         const container = document.getElementById('folders');
-        container.innerHTML = ""; // clear previous
+        container.innerHTML = "";
 
         if(folders.length === 0){
             container.innerHTML = "<p>No folders found</p>";
@@ -83,8 +90,13 @@ async function loadFolders(){
             div.innerText = folder;
 
             div.onclick = () => {
-                window.location.href = '/' + folder;
-            };
+            if(currentFolder){
+            const newPath = `${currentFolder}/${folder}`;
+            window.location.href = `/${newPath}`;
+            } else {
+        window.location.href = `/?folder=${folder}`;
+            }
+        };
 
             container.appendChild(div);
         });
@@ -96,7 +108,6 @@ async function loadFolders(){
     }
 }
 
-// ensure DOM is loaded
 window.onload = loadFolders;
 </script>
 
