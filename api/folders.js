@@ -2,23 +2,20 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = (req, res) => {
-  const { folder } = req.query;
+  try {
+    const filePath = path.join(process.cwd(), 'api', 'data.json');
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 
-  let basePath;
+    const folder = req.query.folder;
 
-  if (!folder) {
-    // root folders
-    basePath = process.cwd();
-  } else {
-    // inside selected folder
-    basePath = path.join(process.cwd(), folder);
+    if (!folder) {
+      return res.status(200).json(data["root"] || []);
+    }
+
+    return res.status(200).json(data[folder] || []);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load folders" });
   }
-
-  const items = fs.readdirSync(basePath, { withFileTypes: true });
-
-  const folders = items
-    .filter(item => item.isDirectory() && !item.name.startsWith('.'))
-    .map(item => item.name);
-
-  res.status(200).json(folders);
 };

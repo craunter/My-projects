@@ -74,8 +74,6 @@ async function loadFolders(){
         const res = await fetch(url);
         const folders = await res.json();
 
-        console.log("Folders:", folders);
-
         const container = document.getElementById('folders');
         container.innerHTML = "";
 
@@ -89,22 +87,31 @@ async function loadFolders(){
             div.className = 'card';
             div.innerText = folder;
 
-            div.onclick = () => {
-            if(currentFolder){
-            const newPath = `${currentFolder}/${folder}`;
-            window.location.href = `/${newPath}`;
-            } else {
-        window.location.href = `/?folder=${folder}`;
-            }
-        };
+            div.onclick = async () => {
+                let newPath = currentFolder 
+                    ? `${currentFolder}/${folder}` 
+                    : folder;
+
+                // 🔥 check if next level has folders
+                const checkRes = await fetch(`/api/folders?folder=${newPath}`);
+                const nextFolders = await checkRes.json();
+
+                if(nextFolders.length === 0){
+                    // ✅ LAST LEVEL → open website
+                    window.location.href = `/${newPath}`;
+                } else {
+                    // 👉 go deeper
+                    window.location.href = `/?folder=${newPath}`;
+                }
+            };
 
             container.appendChild(div);
         });
 
     }catch(err){
-        console.error("Error loading folders:", err);
+        console.error(err);
         document.getElementById('folders').innerHTML = 
-            "<p style='color:red;'>Failed to load folders</p>";
+            "<p style='color:red;'>Error loading folders</p>";
     }
 }
 

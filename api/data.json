@@ -1,5 +1,12 @@
 {
-  "Anuj": ["Anuj_bng", "Anuj_ghy", "Anuj_home"],
+  "root": ["Ankita", "Ayush", "Anuj"],
+
+  "Ankita": [],
   "Ayush": [],
-  "Ankita": []
+
+  "Anuj": ["Anuj_bng", "Anuj_ghy", "Anuj_home"],
+
+  "Anuj/Anuj_bng": [],
+  "Anuj/Anuj_ghy": [],
+  "Anuj/Anuj_home": []
 }
