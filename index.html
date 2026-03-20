@@ -61,7 +61,12 @@ span{
 
 <div class="footer">Click any folder to open</div>
 
-<script>
+<script> 
+
+const folderPasswords = {
+    "Ankita": "112233"   // 🔑 change password here
+}; 
+
 async function loadFolders(){
     try{
         const params = new URLSearchParams(window.location.search);
@@ -87,23 +92,32 @@ async function loadFolders(){
             div.className = 'card';
             div.innerText = folder;
 
-            div.onclick = async () => {
-                let newPath = currentFolder 
-                    ? `${currentFolder}/${folder}` 
-                    : folder;
+           div.onclick = async () => {
 
-                // 🔥 check if next level has folders
-                const checkRes = await fetch(`/api/folders?folder=${newPath}`);
-                const nextFolders = await checkRes.json();
+    let newPath = currentFolder 
+        ? `${currentFolder}/${folder}` 
+        : folder;
 
-                if(nextFolders.length === 0){
-                    // ✅ LAST LEVEL → open website
-                    window.location.href = `/${newPath}`;
-                } else {
-                    // 👉 go deeper
-                    window.location.href = `/?folder=${newPath}`;
-                }
-            };
+    // 🔐 PASSWORD CHECK
+    if(folderPasswords[folder]){
+        const userInput = prompt("Enter password to access 🔐");
+
+        if(userInput !== folderPasswords[folder]){
+            alert("Wrong password ❌");
+            return;
+        }
+    }
+
+    // 🔥 check next level
+    const checkRes = await fetch(`/api/folders?folder=${newPath}`);
+    const nextFolders = await checkRes.json();
+
+    if(nextFolders.length === 0){
+        window.location.href = `/${newPath}`;
+    } else {
+        window.location.href = `/?folder=${newPath}`;
+    }
+};
 
             container.appendChild(div);
         });
