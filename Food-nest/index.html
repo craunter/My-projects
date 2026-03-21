@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Food Nest — Premium Restaurant & Hotel. Exquisite dining and luxurious stay experience." />
+  <title>Food Nest | Premium Restaurant & Hotel</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- ===== LOADING OVERLAY ===== -->
+  <div id="loading-overlay">
+    <div class="loader-logo">🍽 Food Nest</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- ===== OFFER BANNER ===== -->
+  <div class="offer-banner">
+    <span id="offer-text">🎉 Loading offers...</span>
+  </div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-img"><img src="assets/images/logo.jpg" alt="Food Nest Logo" /></div>
+      <span class="nav-logo-text">Food Nest</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="menu/index.html">Menu</a></li>
+      <li><a href="#rooms">Rooms</a></li>
+      <li><a href="#offers">Offers</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="booking/index.html" class="nav-cta">Book Now</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-img">
+      <img src="assets/images/hero.jpg" alt="Food Nest Interior" />
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Premium Dining & Stay</div>
+      <h1>Where Every Meal<br />Becomes a <span>Memory</span></h1>
+      <p>Experience the finest flavours of India and international cuisine, paired with luxurious hotel rooms in the heart of the city.</p>
+      <div class="hero-btns">
+        <a href="menu/index.html" class="btn btn-primary">🍴 Explore Menu</a>
+        <a href="booking/index.html" class="btn btn-secondary">🏨 Book a Room</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURED DISHES ===== -->
+  <section id="featured" style="background: var(--bg-secondary);">
+    <div class="section-header">
+      <span class="section-eyebrow">Chef's Picks</span>
+      <h2 class="section-title">Featured <span>Dishes</span></h2>
+      <p class="section-subtitle">Handcrafted by our master chefs using the finest seasonal ingredients.</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="dishes-grid">
+      <!-- Dish 1 -->
+      <div class="dish-card">
+        <div class="dish-card-img">
+          <img src="assets/images/dish1.jpg" alt="Paneer Butter Masala" />
+          <span class="dish-tag tag-veg">🟢 Veg</span>
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-card-name">Paneer Butter Masala</div>
+          <div class="dish-card-desc">Rich, creamy gravy with paneer cubes simmered in tomato-cashew sauce, fragrant with spices.</div>
+          <div class="dish-card-footer">
+            <div class="dish-price"><span>₹</span>320</div>
+            <a href="menu/index.html" class="btn btn-sm btn-secondary">Order</a>
+          </div>
+        </div>
+      </div>
+      <!-- Dish 2 -->
+      <div class="dish-card">
+        <div class="dish-card-img">
+          <img src="assets/images/dish2.jpg" alt="Grilled Chicken Drumsticks" />
+          <span class="dish-tag tag-nonveg">🔴 Non-Veg</span>
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-card-name">Grilled Chicken Drumsticks</div>
+          <div class="dish-card-desc">Smoky, chargrilled chicken legs marinated overnight in bold spices and citrus marinade.</div>
+          <div class="dish-card-footer">
+            <div class="dish-price"><span>₹</span>480</div>
+            <a href="menu/index.html" class="btn btn-sm btn-secondary">Order</a>
+          </div>
+        </div>
+      </div>
+      <!-- Dish 3 -->
+      <div class="dish-card">
+        <div class="dish-card-img">
+          <img src="assets/images/dish3.jpg" alt="Creamy Alfredo Pasta" />
+          <span class="dish-tag tag-veg">🟢 Veg</span>
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-card-name">Creamy Alfredo Pasta</div>
+          <div class="dish-card-desc">Silky smooth Alfredo sauce tossed with perfectly cooked linguine and fresh herbs.</div>
+          <div class="dish-card-footer">
+            <div class="dish-price"><span>₹</span>350</div>
+            <a href="menu/index.html" class="btn btn-sm btn-secondary">Order</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MENU CATEGORIES ===== -->
+  <section id="categories">
+    <div class="section-header">
+      <span class="section-eyebrow">Browse by Type</span>
+      <h2 class="section-title">Menu <span>Categories</span></h2>
+      <p class="section-subtitle">Discover our wide variety of dishes — from farm-fresh vegetarian to rich non-veg delicacies.</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="categories-grid">
+      <a href="menu/index.html?filter=veg" class="category-card">
+        <img src="assets/images/veg.jpg" alt="Vegetarian" />
+        <div class="category-overlay">
+          <div class="category-icon">🥗</div>
+          <div class="category-name">Vegetarian</div>
+          <div class="category-count">6 Dishes</div>
+        </div>
+      </a>
+      <a href="menu/index.html?filter=nonveg" class="category-card">
+        <img src="assets/images/nonveg.jpg" alt="Non-Vegetarian" />
+        <div class="category-overlay">
+          <div class="category-icon">🍗</div>
+          <div class="category-name">Non-Veg</div>
+          <div class="category-count">6 Dishes</div>
+        </div>
+      </a>
+      <a href="menu/index.html?filter=drinks" class="category-card">
+        <img src="assets/images/drinks.jpg" alt="Beverages" />
+        <div class="category-overlay">
+          <div class="category-icon">🍹</div>
+          <div class="category-name">Beverages</div>
+          <div class="category-count">5 Drinks</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== ROOMS ===== -->
+  <section id="rooms" style="background: var(--bg-secondary);">
+    <div class="section-header">
+      <span class="section-eyebrow">Stay With Us</span>
+      <h2 class="section-title">Our <span>Rooms</span></h2>
+      <p class="section-subtitle">Unwind in our thoughtfully designed rooms — from comfortable basics to ultra-luxurious suites.</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="rooms-grid">
+      <!-- Moderate -->
+      <div class="room-card">
+        <div class="room-card-img">
+          <img src="assets/images/room-moderate.jpg" alt="Moderate Room" />
+        </div>
+        <div class="room-card-body">
+          <div class="room-card-title">Moderate Room</div>
+          <div class="room-price">₹999 <sub>/night</sub></div>
+          <div class="room-features">
+            <span class="room-feature"><span class="icon">📶</span> Free WiFi</span>
+            <span class="room-feature"><span class="icon">🛏</span> Comfy Bed</span>
+            <span class="room-feature"><span class="icon">✨</span> Clean & Hygienic</span>
+          </div>
+          <div class="room-status status-available" id="mod-status">● Loading...</div>
+          <a href="booking/index.html?room=moderate" class="btn btn-primary btn-block btn-sm">Book Now</a>
+        </div>
+      </div>
+      <!-- Luxury -->
+      <div class="room-card">
+        <div class="room-card-img">
+          <img src="assets/images/room-luxury.jpg" alt="Luxury Room" />
+        </div>
+        <div class="room-card-body">
+          <div class="room-card-title">Luxury Room</div>
+          <div class="room-price">₹1999 <sub>/night</sub></div>
+          <div class="room-features">
+            <span class="room-feature"><span class="icon">👑</span> King Bed</span>
+            <span class="room-feature"><span class="icon">❄️</span> AC</span>
+            <span class="room-feature"><span class="icon">📺</span> Smart TV</span>
+          </div>
+          <div class="room-status status-available" id="lux-status">● Loading...</div>
+          <a href="booking/index.html?room=luxury" class="btn btn-primary btn-block btn-sm">Book Now</a>
+        </div>
+      </div>
+      <!-- Ultra Luxury -->
+      <div class="room-card featured">
+        <div class="room-badge">⭐ Most Popular</div>
+        <div class="room-card-img">
+          <img src="assets/images/room-ultra.jpg" alt="Ultra Luxury Room" />
+        </div>
+        <div class="room-card-body">
+          <div class="room-card-title">Ultra Luxury Room</div>
+          <div class="room-price">₹3999 <sub>/night</sub></div>
+          <div class="room-features">
+            <span class="room-feature"><span class="icon">💎</span> Premium Suite</span>
+            <span class="room-feature"><span class="icon">🛋</span> Private Sofa</span>
+            <span class="room-feature"><span class="icon">🌆</span> City View</span>
+          </div>
+          <div class="room-status status-available" id="ultra-status">● Loading...</div>
+          <a href="booking/index.html?room=ultra" class="btn btn-primary btn-block btn-sm">Book Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== OFFERS ===== -->
+  <section id="offers" class="offers-section">
+    <div class="section-header">
+      <span class="section-eyebrow">Special Deals</span>
+      <h2 class="section-title">Exclusive <span>Offers</span></h2>
+      <p class="section-subtitle">Enjoy handpicked offers curated just for our valued guests.</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="offers-grid">
+      <div class="offer-card">
+        <div class="offer-card-icon">🎉</div>
+        <div class="offer-card-title" id="offer-main-text">15% OFF on Online Booking</div>
+        <div class="offer-card-desc">Book your room online and enjoy an instant 15% discount on your stay.</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-card-icon">🍽</div>
+        <div class="offer-card-title">Complimentary Breakfast</div>
+        <div class="offer-card-desc">Stay 2 nights or more and enjoy free breakfast for 2 guests daily.</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-card-icon">🎂</div>
+        <div class="offer-card-title">Birthday Special</div>
+        <div class="offer-card-desc">Celebrate your birthday with us and receive a complimentary dessert platter.</div>
+      </div>
+      <div class="offer-card">
+        <div class="offer-card-icon">💑</div>
+        <div class="offer-card-title">Couple's Delight</div>
+        <div class="offer-card-desc">Romantic room decoration and candle-lit dinner for two at a special price.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact" class="contact-section">
+    <div class="section-header">
+      <span class="section-eyebrow">Get In Touch</span>
+      <h2 class="section-title">Contact <span>Us</span></h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>We'd Love to Hear From You</h3>
+        <p>Whether you want to make a reservation, ask about our menu, or simply share your experience — our team is always here for you.</p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="contact-icon">📍</div>
+            <span>12, MG Road, Connaught Place, New Delhi — 110001</span>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">📞</div>
+            <span>+91 98765 43210</span>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">📧</div>
+            <span>hello@foodnest.in</span>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">🕐</div>
+            <span>Open Daily: 7:00 AM – 11:30 PM</span>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <div class="form-group">
+          <label for="contact-name">Your Name</label>
+          <input type="text" id="contact-name" placeholder="Enter your name" />
+        </div>
+        <div class="form-group">
+          <label for="contact-email">Email Address</label>
+          <input type="email" id="contact-email" placeholder="Enter your email" />
+        </div>
+        <div class="form-group">
+          <label for="contact-msg">Message</label>
+          <textarea id="contact-msg" placeholder="Tell us how we can help..."></textarea>
+        </div>
+        <button class="btn btn-primary" id="contact-submit">Send Message 🚀</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>© 2025 <a href="index.html">Food Nest</a>. Crafted with ❤️ for food lovers. | <a href="admin/index.html">Admin</a></p>
+  </footer>
+
+  <script src="assets/js/script.js"></script>
+</body>
+</html>
