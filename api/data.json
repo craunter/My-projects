@@ -4,10 +4,9 @@
   "Ankita": [],
   "Ayush": [],
 
-  "Anuj": ["Anuj_bng", "Anuj_ghy", "Anuj_home"],
+  "Anuj": ["Anuj_bng", "Anuj_ghy", ],
   "Anuj/Anuj_bng": [],
   "Anuj/Anuj_ghy": [],
-  "Anuj/Anuj_home": [],
 
   "Games": ["tic-tac-toe"],
   "Games/tic-tac-toe": [],
