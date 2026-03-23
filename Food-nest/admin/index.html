@@ -78,7 +78,7 @@
         if (pw === ADMIN_PASSWORD) {
           sessionStorage.setItem('fnAdminAuth', 'true');
           btn.textContent = '✅ Success! Redirecting...';
-          setTimeout(() => window.location.href = '/Food-nest/dashboard.html', 700);
+          setTimeout(() => window.location.href = '/Food-nest/admin/dashboard.html', 700);
         } else {
           document.getElementById('loginError').style.display = 'block';
           btn.textContent = 'Login to Dashboard 🔐';
