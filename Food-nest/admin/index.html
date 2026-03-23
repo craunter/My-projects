@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Admin Login — Food Nest Management Panel" />
   <title>Admin Login | Food Nest</title>
-  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="/Food-nest/assets/css/style.css" />
 </head>
 <body>
 
@@ -20,7 +20,7 @@
       <!-- Logo -->
       <div class="login-logo">
         <div class="login-logo-img">
-          <img src="../assets/images/logo.jpg" alt="Food Nest Logo" />
+          <img src="/Food-nest/assets/images/logo.jpg" alt="Food Nest Logo" />
         </div>
         <h1>Food Nest</h1>
         <p>Admin Management Portal</p>
@@ -49,7 +49,7 @@
       </form>
 
       <div style="text-align:center;margin-top:24px;">
-        <a href="../index.html"
+        <a href="/Food-nest/index.html"
           style="font-size:0.85rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;"
           onmouseover="this.style.color='var(--accent)'"
           onmouseout="this.style.color='var(--text-muted)'">
@@ -59,13 +59,13 @@
     </div>
   </div>
 
-  <script src="../assets/js/script.js"></script>
+  <script src="/Food-nest/assets/js/script.js"></script>
   <script>
     const ADMIN_PASSWORD = 'admin123';
 
     // Redirect if already logged in
     if (sessionStorage.getItem('fnAdminAuth') === 'true') {
-      window.location.href = 'dashboard.html';
+      window.location.href = '/Food-nest/dashboard.html';
     }
 
     function handleLogin(e) {
@@ -78,7 +78,7 @@
         if (pw === ADMIN_PASSWORD) {
           sessionStorage.setItem('fnAdminAuth', 'true');
           btn.textContent = '✅ Success! Redirecting...';
-          setTimeout(() => window.location.href = 'dashboard.html', 700);
+          setTimeout(() => window.location.href = '/Food-nest/dashboard.html', 700);
         } else {
           document.getElementById('loginError').style.display = 'block';
           btn.textContent = 'Login to Dashboard 🔐';
