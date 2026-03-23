@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Book your room at Food Nest — Moderate, Luxury, and Ultra Luxury rooms available." />
+  <title>Book a Room | Food Nest</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+
+  <!-- Loading -->
+  <div id="loading-overlay">
+    <div class="loader-logo">🍽 Food Nest</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <div class="nav-logo-img"><img src="../assets/images/logo.jpg" alt="Food Nest" /></div>
+      <span class="nav-logo-text">Food Nest</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../menu/index.html">Menu</a></li>
+      <li><a href="../index.html#rooms">Rooms</a></li>
+      <li><a href="../index.html#offers">Offers</a></li>
+      <li><a href="../index.html#contact">Contact</a></li>
+      <li><a href="../my-bookings/index.html">My Bookings</a></li>
+      <li><a href="index.html" class="nav-cta active">Book Now</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- Booking Page -->
+  <div class="booking-page">
+
+    <div style="text-align:center;margin-bottom:48px;">
+      <span class="section-eyebrow">Reserve Your Stay</span>
+      <h1 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;color:var(--text-primary);margin-top:10px;">
+        Book a <span style="color:var(--accent)">Room</span>
+      </h1>
+    </div>
+
+    <div class="booking-grid">
+
+      <!-- Left: Room Info + Availability -->
+      <div>
+        <div class="booking-info-card">
+          <div class="booking-info-img" id="roomImgWrapper">
+            <img src="../assets/images/room-ultra.jpg" alt="Selected Room" id="roomImg" />
+          </div>
+          <div class="booking-info-body">
+            <h2 id="roomTitle">Ultra Luxury Room</h2>
+            <div class="booking-price" id="roomPrice">₹3999 <sub style="font-size:0.7rem;font-weight:400;color:var(--text-muted)">/night</sub></div>
+            <div class="room-features" id="roomFeatures">
+              <span class="room-feature"><span class="icon">💎</span> Premium Suite</span>
+              <span class="room-feature"><span class="icon">🛋</span> Private Sofa</span>
+              <span class="room-feature"><span class="icon">🌆</span> City View</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room Availability -->
+        <div class="rooms-availability" style="margin-top:24px;">
+          <h3>🏷 Room Availability</h3>
+          <div class="room-numbers" id="roomNumbersList">
+            <div style="font-size:0.85rem;color:var(--text-muted)">Loading availability...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Booking Form -->
+      <div class="booking-form-card">
+        <h2>Complete Your Booking</h2>
+        <p>Fill in your details and we'll confirm your reservation instantly.</p>
+        <form id="bookingForm" onsubmit="submitBooking(event)">
+          <div class="form-group">
+            <label for="guestName">Full Name *</label>
+            <input type="text" id="guestName" placeholder="Enter your full name" required />
+          </div>
+          <div class="form-group">
+            <label for="guestPhone">Phone Number *</label>
+            <div class="phone-input-group">
+              <span class="phone-prefix">+91</span>
+              <input type="tel" id="guestPhone"
+                placeholder="Enter 10-digit number"
+                maxlength="10"
+                inputmode="numeric"
+                autocomplete="tel"
+                oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"
+              />
+            </div>
+            <span class="phone-error" id="phoneError">Enter valid 10-digit phone number</span>
+          </div>
+          <div class="form-group">
+            <label for="guestEmail">Email Address</label>
+            <input type="email" id="guestEmail" placeholder="yourname@example.com" />
+          </div>
+          <div class="form-group">
+            <label for="checkIn">Check-In Date *</label>
+            <input type="date" id="checkIn" required />
+          </div>
+          <div class="form-group">
+            <label for="checkOut">Check-Out Date *</label>
+            <input type="date" id="checkOut" required />
+          </div>
+          <div class="form-group">
+            <label for="roomType">Room Type</label>
+            <select id="roomType" onchange="updateRoomInfo()">
+              <option value="moderate">Moderate Room — ₹999/night</option>
+              <option value="luxury">Luxury Room — ₹1999/night</option>
+              <option value="ultra" selected>Ultra Luxury Room — ₹3999/night</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="guests">Number of Guests</label>
+            <select id="guests">
+              <option value="1">1 Guest</option>
+              <option value="2" selected>2 Guests</option>
+              <option value="3">3 Guests</option>
+              <option value="4">4 Guests</option>
+            </select>
+          </div>
+          <div style="margin-top:8px;">
+            <button type="submit" class="btn btn-primary btn-block" id="bookBtn">
+              Confirm Booking 🏨
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div><!-- end booking-page -->
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 <a href="../index.html">Food Nest</a>. All rights reserved.</p>
+  </footer>
+
+  <!-- Success Popup -->
+  <div class="popup-overlay" id="successPopup">
+    <div class="popup-card">
+      <div class="popup-icon">✅</div>
+      <h2>Booking Confirmed!</h2>
+      <p>Your room has been successfully reserved. We look forward to welcoming you at <strong>Food Nest</strong>!</p>
+      <div class="booking-id" id="bookingIdDisplay">Booking ID: FN-000000</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+        <button class="btn btn-primary" onclick="goMyBookings()">📋 View My Bookings</button>
+        <button class="btn btn-secondary" onclick="closePopup()">🏠 Go Home</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/script.js"></script>
+  <script>
+    // Room data config
+    const roomConfig = {
+      moderate: {
+        title: 'Moderate Room',
+        price: '₹999',
+        img: '../assets/images/room-moderate.jpg',
+        features: [
+          { icon: '📶', label: 'Free WiFi' },
+          { icon: '🛏', label: 'Comfy Bed' },
+          { icon: '✨', label: 'Clean & Hygienic' }
+        ]
+      },
+      luxury: {
+        title: 'Luxury Room',
+        price: '₹1999',
+        img: '../assets/images/room-luxury.jpg',
+        features: [
+          { icon: '👑', label: 'King Bed' },
+          { icon: '❄️', label: 'AC' },
+          { icon: '📺', label: 'Smart TV' }
+        ]
+      },
+      ultra: {
+        title: 'Ultra Luxury Room',
+        price: '₹3999',
+        img: '../assets/images/room-ultra.jpg',
+        features: [
+          { icon: '💎', label: 'Premium Suite' },
+          { icon: '🛋', label: 'Private Sofa' },
+          { icon: '🌆', label: 'City View' }
+        ]
+      }
+    };
+
+    function updateRoomInfo() {
+      const type = document.getElementById('roomType').value;
+      const cfg = roomConfig[type];
+      document.getElementById('roomTitle').textContent = cfg.title;
+      document.getElementById('roomPrice').innerHTML = cfg.price + ' <sub style="font-size:0.7rem;font-weight:400;color:var(--text-muted)">/night</sub>';
+      document.getElementById('roomImg').src = cfg.img;
+      document.getElementById('roomImg').alt = cfg.title;
+      const featEl = document.getElementById('roomFeatures');
+      featEl.innerHTML = cfg.features.map(f =>
+        `<span class="room-feature"><span class="icon">${f.icon}</span> ${f.label}</span>`
+      ).join('');
+    }
+
+    // Set min dates
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('checkIn').min = today;
+    document.getElementById('checkOut').min = today;
+    document.getElementById('checkIn').value = today;
+    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('checkOut').value = tomorrow.toISOString().split('T')[0];
+
+    // Read URL param
+    const params = new URLSearchParams(window.location.search);
+    const roomParam = params.get('room');
+    if (roomParam && roomConfig[roomParam]) {
+      document.getElementById('roomType').value = roomParam;
+      updateRoomInfo();
+    }
+
+    // Load availability from localStorage
+    function loadAvailability() {
+      const data = JSON.parse(localStorage.getItem('foodNestData') || '{}');
+      const rooms = data.rooms || [
+        { room: '101', status: 'available' },
+        { room: '102', status: 'occupied' },
+        { room: '103', status: 'available' },
+        { room: '104', status: 'occupied' },
+        { room: '105', status: 'available' }
+      ];
+      const list = document.getElementById('roomNumbersList');
+      list.innerHTML = rooms.map(r => `
+        <div class="room-number-badge ${r.status === 'available' ? 'badge-available' : 'badge-occupied'}">
+          ${r.status === 'available' ? '✅' : '🚫'} Room ${r.room}
+        </div>
+      `).join('');
+    }
+    loadAvailability();
+
+    function submitBooking(e) {
+      e.preventDefault();
+      const name     = document.getElementById('guestName').value.trim();
+      const phoneRaw = document.getElementById('guestPhone').value.replace(/\D/g, '');
+      const phoneErr = document.getElementById('phoneError');
+
+      // Validate phone
+      if (phoneRaw.length !== 10) {
+        phoneErr.classList.add('visible');
+        document.getElementById('guestPhone').focus();
+        return;
+      }
+      phoneErr.classList.remove('visible');
+
+      if (!name) return;
+      const phone = '+91' + phoneRaw;  // store with prefix
+
+      const roomTypeRaw = document.getElementById('roomType').value;
+      const roomLabels  = { moderate: 'Moderate', luxury: 'Luxury', ultra: 'Ultra Luxury' };
+      const roomType    = roomLabels[roomTypeRaw] || roomTypeRaw;
+
+      // Format time: YYYY-MM-DD HH:MM
+      const now     = new Date();
+      const timeStr = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2,'0') + '-' +
+        String(now.getDate()).padStart(2,'0') + ' ' +
+        String(now.getHours()).padStart(2,'0') + ':' +
+        String(now.getMinutes()).padStart(2,'0');
+
+      // Generate booking ID
+      const id = 'FN-' + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('bookingIdDisplay').textContent = 'Booking ID: ' + id;
+
+      // Save to localStorage under key 'bookings' (new structure)
+      const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+      bookings.push({ id, name, phone, roomType, time: timeStr, status: 'Confirmed' });
+      localStorage.setItem('bookings', JSON.stringify(bookings));
+
+      // Also keep legacy key for admin dashboard backward compat
+      const fnBookings = JSON.parse(localStorage.getItem('fnBookings') || '[]');
+      fnBookings.push({ id, name, phone, room: roomTypeRaw, date: now.toISOString() });
+      localStorage.setItem('fnBookings', JSON.stringify(fnBookings));
+
+      // Show popup
+      document.getElementById('successPopup').classList.add('show');
+      document.getElementById('bookingForm').reset();
+      updateRoomInfo();
+    }
+
+    function closePopup() {
+      document.getElementById('successPopup').classList.remove('show');
+      window.location.href = '../index.html';
+    }
+
+    function goMyBookings() {
+      window.location.href = '../my-bookings/index.html';
+    }
+  </script>
+</body>
+</html>
