@@ -1372,4 +1372,179 @@ footer a { color: var(--accent); }
   .hero-btns { flex-direction: column; align-items: flex-start; }
   .booking-form-card { padding: 24px; }
   .login-card { padding: 32px 24px; }
+}  
+
+/* ================= FINAL MOBILE NAV SYSTEM ================= */
+
+@media (max-width: 768px) {
+
+  /* NAVBAR */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    padding: 0 4%;
+    z-index: 1002;
+    background: rgba(15,14,13,0.95);
+    backdrop-filter: blur(12px);
+  }
+
+  /* LOGO */
+  .nav-logo-text {
+    font-size: 1.2rem;
+  }
+
+  .nav-logo-img {
+    width: 38px;
+    height: 38px;
+  }
+
+  /* HAMBURGER */
+  .hamburger {
+    display: flex;
+    z-index: 1003;
+  }
+
+  /* MOBILE MENU */
+  .nav-links {
+    position: fixed;
+    top: 65px; /* 👈 below navbar */
+    left: 0;
+    right: 0;
+    height: calc(100vh - 65px);
+
+    background: rgba(15,14,13,0.98);
+    backdrop-filter: blur(16px);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 28px;
+    padding: 20px;
+
+    transform: translateY(-120%);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+
+    z-index: 1001;
+  }
+
+  /* OPEN STATE */
+  .nav-links.open {
+    transform: translateY(0);
+  }
+
+  /* NAV ITEMS */
+  .nav-links a {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  /* BOOK BUTTON */
+  .nav-cta {
+    margin-top: 10px;
+    padding: 12px 26px;
+    font-size: 1rem;
+  }
+
+  /* HERO FIX */
+  .hero {
+    height: auto;
+    min-height: 90vh;
+  }
+
+.hero-content {  
+margin-top: 70px;
+padding: 10px ; 
+  
+  }
+
+  /* TEXT FIX */
+  .hero h1 { 
+    margin-top: 400px;
+    text-align: left !important;
+    margin-bottom: 24px !important;
+  }
+
+  .hero p {
+    font-size: 0.6rem !important;
+    text-align: left !important;
+    margin-bottom: 20px !important;
+    max-width: 100% !important;
+  }
+
+  .hero-eyebrow { 
+    font-size: 1rem !important;
+    text-align: left !important;
+  }
+
+  .hero-btns {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* GRID FIXES */
+  .categories-grid,
+  .dishes-grid,
+  .rooms-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* SECTION SPACING */
+  section {
+    padding: 55px 4%;
+  }
+
+  /* CONTACT */
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  /* ADMIN FIX */
+  .sidebar {
+    transform: translateX(-100%);
+    position: fixed;
+    z-index: 1005;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .dashboard-main {
+    margin-left: 0;
+  }
+
+  .dash-content {
+    padding: 20px;
+  }
+}
+
+/* EXTRA SMALL DEVICES */
+@media (max-width: 480px) {
+
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .nav-links a {
+    font-size: 1rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+  }
+
+  .login-card {
+    padding: 24px 16px;
+  }
 }
