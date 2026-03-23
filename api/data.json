@@ -11,9 +11,10 @@
   "Games": ["tic-tac-toe"],
   "Games/tic-tac-toe": [],
 
-  "Food-nest": ["admin", "booking", "menu"],
+  "Food-nest": ["admin", "booking", "menu","my-bookings"],
 
   "Food-nest/admin": [],
   "Food-nest/booking": [],
-  "Food-nest/menu": []
+  "Food-nest/menu": [], 
+  "Food-nest/my-bookings": []
 }
