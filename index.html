@@ -3,134 +3,779 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ayush Hub</title>
-
+<title>My Projects — Antigravity Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-body{
-    margin:0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:white;
-    text-align:center;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-h1{
-    margin-top:40px;
-    font-size:2.5rem;
-}
+  :root {
+    --void: #02020a;
+    --nebula: #080818;
+    --plasma: #00d4ff;
+    --aurora: #7b2fff;
+    --stardust: rgba(255,255,255,0.06);
+    --border: rgba(0,212,255,0.18);
+    --text: rgba(255,255,255,0.88);
+    --muted: rgba(255,255,255,0.42);
+    --card-bg: rgba(255,255,255,0.03);
+    --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  }
 
-span{
-    color:#00ffd5;
-}
+  html { scroll-behavior: smooth; }
 
-/* GRID */
-.container{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:20px;
-    padding:40px;
-}
+  body {
+    background: var(--void);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+    min-height: 100vh;
+  }
 
-/* CARD */
-.card{
-    background:rgba(255,255,255,0.05);
-    backdrop-filter:blur(15px);
-    padding:30px;
-    border-radius:20px;
-    cursor:pointer;
-    transition:0.3s;
-}
+  /* ── LOADER ── */
+  #loader {
+    position: fixed; inset: 0;
+    background: var(--void);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.8s var(--ease), visibility 0.8s;
+  }
+  #loader.hide { opacity: 0; visibility: hidden; }
 
-.card:hover{
-    transform:translateY(-10px) scale(1.05);
-    background:rgba(255,255,255,0.1);
-}
+  .orbit-svg { width: 80px; height: 80px; margin-bottom: 28px; }
+  .orbit-ring { fill: none; stroke: rgba(0,212,255,0.18); stroke-width: 1.5; }
+  .orbit-dot { fill: var(--plasma); filter: drop-shadow(0 0 6px var(--plasma)); }
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateX(28px) rotate(0deg); }
+    to   { transform: rotate(360deg) translateX(28px) rotate(-360deg); }
+  }
+  .orbit-dot { animation: orbit 1.4s linear infinite; transform-origin: 40px 40px; }
+  .loader-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 0.25em;
+    color: var(--plasma); opacity: 0.8;
+  }
 
-.footer{
-    margin-top:20px;
-    opacity:0.7;
-}
+  /* ── CUSTOM CURSOR ── */
+  #cursor-dot {
+    position: fixed; width: 8px; height: 8px;
+    background: var(--plasma); border-radius: 50%;
+    pointer-events: none; z-index: 9000;
+    transform: translate(-50%,-50%);
+    transition: transform 0.05s, background 0.2s, width 0.3s var(--ease), height 0.3s var(--ease);
+  }
+  #cursor-ring {
+    position: fixed; width: 38px; height: 38px;
+    border: 1px solid rgba(0,212,255,0.5);
+    border-radius: 50%;
+    pointer-events: none; z-index: 8999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.15s var(--ease), width 0.3s var(--ease), height 0.3s var(--ease), border-color 0.3s, background 0.3s;
+  }
+  body.hovering #cursor-dot { width: 4px; height: 4px; background: transparent; }
+  body.hovering #cursor-ring {
+    width: 56px; height: 56px;
+    background: rgba(0,212,255,0.08);
+    border-color: var(--plasma);
+    box-shadow: 0 0 20px rgba(0,212,255,0.3);
+  }
+
+  @media (hover: none) { #cursor-dot, #cursor-ring { display: none; } body { cursor: auto; } }
+
+  /* ── STARFIELD ── */
+  #starfield {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── MAIN CONTENT ── */
+  #content {
+    position: relative; z-index: 1;
+    opacity: 0; transition: opacity 1s var(--ease);
+  }
+  #content.visible { opacity: 1; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 48px;
+    background: linear-gradient(to bottom, rgba(2,2,10,0.9), transparent);
+    z-index: 100;
+    backdrop-filter: blur(2px);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--plasma);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: 11px; letter-spacing: 0.2em;
+    color: var(--muted); text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* ── HEADER ── */
+  header {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+  }
+  .header-label {
+    font-size: 10px; letter-spacing: 0.35em;
+    color: var(--plasma); text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0; transform: translateY(20px);
+    animation: reveal 0.8s var(--ease) 0.2s forwards;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 10vw, 7.5rem);
+    font-weight: 800; line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: #fff;
+    opacity: 0; transform: translateY(30px);
+    animation: reveal 1s var(--ease) 0.4s forwards;
+  }
+  h1 span { color: var(--plasma); }
+  .header-sub {
+    margin-top: 28px;
+    font-size: clamp(12px, 2vw, 14px);
+    color: var(--muted); max-width: 480px;
+    line-height: 1.9; letter-spacing: 0.04em;
+    opacity: 0; transform: translateY(20px);
+    animation: reveal 0.8s var(--ease) 0.7s forwards;
+  }
+  .scroll-hint {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0; animation: reveal 1s var(--ease) 1.2s forwards;
+  }
+  .scroll-hint span { font-size: 9px; letter-spacing: 0.3em; color: var(--muted); }
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--plasma), transparent);
+    animation: scrollpulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollpulse {
+    0%,100% { opacity: 0.3; transform: scaleY(0.6); }
+    50% { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 80px 48px; max-width: 1300px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 10px; letter-spacing: 0.35em;
+    color: var(--plasma); text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700; color: #fff;
+    margin-bottom: 60px;
+  }
+
+  /* ── FEATURE (CAROUSEL + PANEL) ── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  /* ── CAROUSEL ── */
+  .carousel-wrap {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 0;
+  }
+  .carousel-stage {
+    position: relative;
+    width: 100%; height: 320px;
+    perspective: 1200px;
+  }
+  .c-card {
+    position: absolute;
+    width: 240px; height: 290px;
+    left: 50%; top: 50%;
+    transform-origin: center center;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.65s var(--ease);
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    will-change: transform, opacity;
+  }
+  .c-card img {
+    width: 100%; height: 65%;
+    object-fit: cover; display: block;
+    transition: transform 0.4s var(--ease);
+  }
+  .c-card:hover img { transform: scale(1.06); }
+  .c-card-info {
+    padding: 14px 16px;
+  }
+  .c-card-info h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: #fff; margin-bottom: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .c-card-info p {
+    font-size: 10px; color: var(--muted);
+    line-height: 1.6;
+  display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+
+line-clamp: 2; /* standard property */
+overflow: hidden;
+  }
+  .c-card.active {
+    box-shadow: 0 0 50px rgba(0,212,255,0.2), inset 0 1px 0 rgba(255,255,255,0.07);
+    border-color: rgba(0,212,255,0.45);
+  }
+  @keyframes float {
+    0%,100% { --float-y: 0px; }
+    50% { --float-y: -10px; }
+  }
+
+  /* Arrow buttons */
+  .arr-btn {
+    position: absolute; top: 50%; z-index: 10;
+    transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(0,212,255,0.04);
+    backdrop-filter: blur(12px);
+    color: var(--plasma); font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s var(--ease);
+    outline: none;
+  }
+  .arr-btn:hover {
+    background: rgba(0,212,255,0.12);
+    border-color: var(--plasma);
+    box-shadow: 0 0 20px rgba(0,212,255,0.25);
+  }
+  .arr-prev { left: -4px; }
+  .arr-next { right: -4px; }
+
+  /* ── DESCRIPTION PANEL ── */
+  .desc-panel {
+    padding: 40px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card-bg);
+    backdrop-filter: blur(24px);
+    min-height: 320px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .desc-panel::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .panel-label {
+    font-size: 9px; letter-spacing: 0.4em;
+    color: var(--plasma); text-transform: uppercase;
+    margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
+  }
+  .panel-label::before {
+    content: ''; display: inline-block;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--plasma);
+    animation: blink 1.4s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .panel-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700; color: #fff;
+    margin-bottom: 16px; line-height: 1.1;
+  }
+  .panel-desc {
+    font-size: 12px; color: var(--muted);
+    line-height: 2; margin-bottom: 32px;
+    letter-spacing: 0.03em;
+  }
+  .panel-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 24px;
+    border: 1px solid var(--plasma);
+    border-radius: 8px;
+    color: var(--plasma); font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; text-decoration: none;
+    background: transparent;
+    cursor: pointer; outline: none;
+    transition: all 0.35s var(--ease);
+    align-self: flex-start;
+  }
+  .panel-cta:hover {
+    background: var(--plasma);
+    color: var(--void);
+    box-shadow: 0 0 30px rgba(0,212,255,0.4);
+  }
+  .panel-inner { transition: opacity 0.35s, transform 0.35s var(--ease); }
+  .panel-inner.out { opacity: 0; transform: translateY(16px); }
+
+  /* ── GALLERY ── */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+  }
+  .g-card {
+    border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    cursor: pointer;
+    transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease), border-color 0.3s;
+    opacity: 0; transform: translateY(30px);
+  }
+  .g-card.revealed {
+    opacity: 1; transform: translateY(0);
+  }
+  .g-card:hover {
+    transform: translateY(-8px) rotate(0.4deg);
+    box-shadow: 0 24px 60px rgba(0,212,255,0.15);
+    border-color: rgba(0,212,255,0.4);
+  }
+  .g-img-wrap {
+    width: 100%; padding-top: 56.25%;
+    position: relative; overflow: hidden;
+  }
+  .g-img-wrap img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.5s var(--ease);
+  }
+  .g-card:hover .g-img-wrap img { transform: scale(1.07); }
+  .g-card-body { padding: 16px 18px; }
+  .g-card-body h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 600; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .g-card-body span {
+    font-size: 10px; color: var(--muted); letter-spacing: 0.1em;
+  }
+
+  /* ── NO PROJECTS PLACEHOLDER ── */
+  .empty-state {
+    text-align: center; padding: 60px 24px;
+    color: var(--muted); font-size: 13px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 60px 24px 40px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    font-size: 10px; color: var(--muted);
+    letter-spacing: 0.2em;
+    position: relative; z-index: 1;
+  }
+
+  @keyframes reveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 0 auto;
+    max-width: 1300px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 18px 24px; }
+    .nav-links { gap: 20px; }
+    section { padding: 60px 24px; }
+    .feature-grid { grid-template-columns: 1fr; gap: 40px; }
+    .carousel-stage { height: 300px; }
+    .c-card { width: 200px; height: 260px; }
+    .desc-panel { padding: 28px; min-height: auto; }
+  }
+
+  @media (max-width: 560px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    h1 { font-size: 2.8rem; }
+    .carousel-stage { height: 270px; }
+    .c-card { width: 170px; height: 230px; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    .arr-prev { left: -2px; }
+    .arr-next { right: -2px; }
+  }
+
+  @media (max-width: 380px) {
+    .gallery-grid { grid-template-columns: 1fr; }
+    .c-card { width: 150px; height: 210px; }
+  }
 </style>
 </head>
-
 <body>
 
-<h1>Projects of <span>Ayush</span> 🚀</h1>
+<!-- LOADER -->
+<div id="loader">
+  <svg class="orbit-svg" viewBox="0 0 80 80">
+    <ellipse class="orbit-ring" cx="40" cy="40" rx="30" ry="14" transform="rotate(-20 40 40)"/>
+    <circle class="orbit-dot" cx="12" cy="40" r="4" transform="rotate(-20 40 40)"/>
+  </svg>
+  <div class="loader-text" id="loader-text">INITIALIZING</div>
+</div>
 
-<div class="container" id="folders"></div>
+<!-- CUSTOM CURSOR -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
 
-<div class="footer">Click any folder to open</div>
+<!-- STARFIELD -->
+<canvas id="starfield"></canvas>
 
-<script> 
+<!-- MAIN -->
+<div id="content">
+  <nav>
+    <a href="#" class="nav-logo">Portfolio</a>
+    <div class="nav-links">
+      <a href="#featured">Featured</a>
+      <a href="#gallery">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
 
-const folderPasswords = {
-    "Ankita": "112233"   // 🔑 change password here
-}; 
+  <header>
+    <div class="header-label">// Creative Developer</div>
+    <h1>My<br><span>Projects</span></h1>
+    <p class="header-sub">I am Ayush Sharma, a passionate website developer focused on building modern, user-friendly, and fully functional web experiences. I specialize in creating clean designs with powerful features like booking systems, admin panels, and interactive UI to deliver practical, real-world solutions.</p>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </header>
 
-async function loadFolders(){
-    try{
-        const params = new URLSearchParams(window.location.search);
-        const currentFolder = params.get("folder");
+  <div class="divider"></div>
 
-        const url = currentFolder 
-            ? `/api/folders?folder=${currentFolder}` 
-            : `/api/folders`;
+  <!-- FEATURE SECTION -->
+  <section id="featured">
+    <div class="section-label">// Active Missions</div>
+    <div class="section-title">Featured Work</div>
+    <div class="feature-grid">
+      <!-- CAROUSEL -->
+      <div class="carousel-wrap">
+        <button class="arr-btn arr-prev" id="prevBtn" aria-label="Previous">&#8592;</button>
+        <div class="carousel-stage" id="carouselStage"></div>
+        <button class="arr-btn arr-next" id="nextBtn" aria-label="Next">&#8594;</button>
+      </div>
+      <!-- PANEL -->
+      <div class="desc-panel">
+        <div class="panel-label">Active Mission</div>
+        <div class="panel-inner" id="panelInner">
+          <div class="panel-title" id="panelTitle">Loading...</div>
+          <div class="panel-desc" id="panelDesc"></div>
+          <a class="panel-cta" id="panelCta" href="#" target="_blank" rel="noopener">
+            <span>Launch Project</span>
+            <span>&#8599;</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        const res = await fetch(url);
-        const folders = await res.json();
+  <div class="divider"></div>
 
-        const container = document.getElementById('folders');
-        container.innerHTML = "";
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="section-label">// All Projects</div>
+    <div class="section-title">Project Gallery</div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
 
-        if(folders.length === 0){
-            container.innerHTML = "<p>No folders found</p>";
-            return;
-        }
+  <footer id="contact">
+    <p style="font-family:'Syne',sans-serif;font-size:12px;color:rgba(255,255,255,0.5);letter-spacing:0.2em;">
+      My PORTFOLIO &nbsp;&mdash;&nbsp; BUILT WITH INTENTION </p><br>
+      <p1>Contact ayushsarma19@gmail.com</p1>
+    </p>
+  </footer>
+</div>
 
-        folders.forEach(folder => {
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.innerText = folder;
+<script>
+/* ── LOADER TEXT ANIM ── */
+const loaderEl = document.getElementById('loader');
+const loaderText = document.getElementById('loader-text');
+const words = ['INITIALIZING','LOADING MISSIONS','DEFYING GRAVITY'];
+let li = 0;
+const lt = setInterval(() => {
+  li = (li + 1) % words.length;
+  loaderText.textContent = words[li];
+}, 600);
 
-           div.onclick = async () => {
+/* ── STARFIELD ── */
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let stars = [], W, H, mx = 0, my = 0;
+function initStars() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  stars = Array.from({length: 220}, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    r: Math.random() * 1.4 + 0.2,
+    o: Math.random() * 0.6 + 0.1,
+    speed: Math.random() * 0.25 + 0.05,
+    layer: Math.floor(Math.random() * 3)
+  }));
+}
+function drawStars() {
+  ctx.clearRect(0, 0, W, H);
+  const parallax = [0.02, 0.05, 0.09];
+  stars.forEach(s => {
+    const px = s.x + mx * parallax[s.layer];
+    const py = s.y + my * parallax[s.layer];
+    ctx.beginPath();
+    ctx.arc(((px % W) + W) % W, ((py % H) + H) % H, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${s.o})`;
+    ctx.fill();
+    s.y -= s.speed;
+    if (s.y < 0) { s.y = H; s.x = Math.random() * W; }
+  });
+  requestAnimationFrame(drawStars);
+}
+window.addEventListener('resize', initStars);
+document.addEventListener('mousemove', e => {
+  mx = e.clientX - W / 2;
+  my = e.clientY - H / 2;
+});
+initStars(); drawStars();
 
-    let newPath = currentFolder 
-        ? `${currentFolder}/${folder}` 
-        : folder;
+/* ── CUSTOM CURSOR ── */
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let cx2 = 0, cy2 = 0, rx2 = 0, ry2 = 0;
+document.addEventListener('mousemove', e => { cx2 = e.clientX; cy2 = e.clientY; });
+function animCursor() {
+  rx2 += (cx2 - rx2) * 0.14;
+  ry2 += (cy2 - ry2) * 0.14;
+  dot.style.left = cx2 + 'px'; dot.style.top = cy2 + 'px';
+  ring.style.left = rx2 + 'px'; ring.style.top = ry2 + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+document.querySelectorAll('a, button, .c-card, .g-card, .panel-cta').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+});
 
-    // 🔐 PASSWORD CHECK
-    if(folderPasswords[folder]){
-        const userInput = prompt("Enter password to access 🔐");
+/* ── CAROUSEL ── */
+let projects = [], activeIdx = 0;
+const stage = document.getElementById('carouselStage');
 
-        if(userInput !== folderPasswords[folder]){
-            alert("Wrong password ❌");
-            return;
-        }
-    }
-
-    // 🔥 check next level
-    const checkRes = await fetch(`/api/folders?folder=${newPath}`);
-    const nextFolders = await checkRes.json();
-
-    if(nextFolders.length === 0){
-        window.location.href = `/${newPath}`;
-    } else {
-        window.location.href = `/?folder=${newPath}`;
-    }
-};
-
-            container.appendChild(div);
-        });
-
-    }catch(err){
-        console.error(err);
-        document.getElementById('folders').innerHTML = 
-            "<p style='color:red;'>Error loading folders</p>";
-    }
+function getCardConfig(offset, total) {
+  const visible = Math.min(3, total);
+  const configs = {
+    '-2': { x: '-170%', z: -200, ry: 30, scale: 0.62, opacity: 0, zIndex: 0 },
+    '-1': { x: '-62%', z: -90, ry: 18, scale: 0.8, opacity: 0.6, zIndex: 1 },
+    '0':  { x: '-50%', z: 0, ry: 0, scale: 1.0, opacity: 1, zIndex: 2 },
+    '1':  { x: '38%', z: -90, ry: -18, scale: 0.8, opacity: 0.6, zIndex: 1 },
+    '2':  { x: '150%', z: -200, ry: -30, scale: 0.62, opacity: 0, zIndex: 0 },
+  };
+  const key = String(Math.max(-2, Math.min(2, offset)));
+  return configs[key] || configs['-2'];
 }
 
-window.onload = loadFolders;
-</script>
+function renderCarousel() {
+  const cards = stage.querySelectorAll('.c-card');
+  cards.forEach((card, i) => {
+    const rel = i - activeIdx;
+    const norm = ((rel + projects.length) % projects.length);
+    const offset = norm > projects.length / 2 ? norm - projects.length : norm;
+    const cfg = getCardConfig(offset, projects.length);
+    card.style.cssText = `
+      left:50%; top:50%;
+      transform: translateX(${cfg.x}) translateY(-50%) translateZ(${cfg.z}px) rotateY(${cfg.ry}deg) scale(${cfg.scale});
+      opacity:${cfg.opacity};
+      z-index:${cfg.zIndex};
+      width:240px; height:290px;
+      position:absolute;
+      border-radius:16px;
+      overflow:hidden;
+      cursor:pointer;
+      transition:all 0.65s cubic-bezier(0.23,1,0.32,1);
+      border:1px solid ${offset === 0 ? 'rgba(0,212,255,0.45)' : 'rgba(0,212,255,0.18)'};
+      background:rgba(255,255,255,0.03);
+      backdrop-filter:blur(20px);
+      will-change:transform,opacity;
+      box-shadow:${offset === 0 ? '0 0 50px rgba(0,212,255,0.2),inset 0 1px 0 rgba(255,255,255,0.07)' : 'none'};
+    `;
+  });
+}
 
+function updatePanel(animate = true) {
+  const p = projects[activeIdx];
+  if (!p) return;
+  const inner = document.getElementById('panelInner');
+  const doUpdate = () => {
+    document.getElementById('panelTitle').textContent = p.name || 'Untitled';
+    document.getElementById('panelDesc').textContent = p.description || '';
+    const cta = document.getElementById('panelCta');
+    cta.href = p.liveUrl || '#';
+  };
+  if (animate) {
+    inner.classList.add('out');
+    setTimeout(() => { doUpdate(); inner.classList.remove('out'); }, 350);
+  } else {
+    doUpdate();
+  }
+}
+
+function buildCarousel(data) {
+  stage.innerHTML = '';
+  data.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'c-card';
+    card.innerHTML = `
+      <img src="${p.image || ''}" alt="${p.name || ''}" loading="lazy" onerror="this.style.background='rgba(0,212,255,0.06)';this.style.height='65%';this.removeAttribute('src')">
+      <div class="c-card-info">
+        <h3>${p.name || 'Project'}</h3>
+        <p>${p.description || ''}</p>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      if (i === activeIdx) {
+        if (p.liveUrl) window.open(p.liveUrl, '_blank', 'noopener');
+      } else {
+        activeIdx = i;
+        renderCarousel();
+        updatePanel();
+      }
+    });
+    stage.appendChild(card);
+  });
+  renderCarousel();
+  updatePanel(false);
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  activeIdx = (activeIdx - 1 + projects.length) % projects.length;
+  renderCarousel(); updatePanel();
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  activeIdx = (activeIdx + 1) % projects.length;
+  renderCarousel(); updatePanel();
+});
+
+/* Touch swipe on carousel */
+let touchStartX = 0;
+stage.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive: true});
+stage.addEventListener('touchend', e => {
+  const dx = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 40) {
+    if (dx > 0) { activeIdx = (activeIdx + 1) % projects.length; }
+    else { activeIdx = (activeIdx - 1 + projects.length) % projects.length; }
+    renderCarousel(); updatePanel();
+  }
+}, {passive: true});
+
+/* ── GALLERY ── */
+function buildGallery(data) {
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = '';
+  if (!data.length) {
+    grid.innerHTML = '<div class="empty-state">No projects found in data.json</div>';
+    return;
+  }
+  data.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'g-card';
+    card.style.transitionDelay = `${i * 60}ms`;
+    const rot = (Math.random() * 3 - 1.5).toFixed(2);
+    card.style.transform = `translateY(30px) rotate(${rot}deg)`;
+    card.innerHTML = `
+      <div class="g-img-wrap">
+        <img src="${p.image || ''}" alt="${p.name || ''}" loading="lazy"
+             onerror="this.parentElement.style.background='rgba(0,212,255,0.05)';this.remove()">
+      </div>
+      <div class="g-card-body">
+        <h3>${p.name || 'Project'}</h3>
+        <span>${p.featured ? '★ Featured' : 'Project'}</span>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      if (p.liveUrl) window.open(p.liveUrl, '_blank', 'noopener');
+    });
+    grid.appendChild(card);
+  });
+
+  /* Intersection reveal */
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        entry.target.style.transform = '';
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  grid.querySelectorAll('.g-card').forEach(c => obs.observe(c));
+}
+
+/* ── LOAD DATA ── */
+async function loadData() {
+  let data = [];
+  try {
+    const res = await fetch('/api/data.json');
+    if (!res.ok) throw new Error('Not found');
+    data = await res.json();
+    if (!Array.isArray(data)) data = [];
+  } catch {
+    /* Fallback demo data when running locally */
+    data = [
+      { id:1, name:'Stellar Dashboard', description:'A real-time analytics dashboard with animated data visualizations and dark mode.', image:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80', liveUrl:'#', featured:true },
+      { id:2, name:'Orbit Commerce', description:'Full-stack e-commerce platform with serverless functions and seamless checkout.', image:'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=600&q=80', liveUrl:'#', featured:true },
+      { id:3, name:'Nebula Chat', description:'Real-time collaborative chat app with end-to-end encryption and spatial audio.', image:'https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=600&q=80', liveUrl:'#', featured:true },
+      { id:4, name:'Void Notes', description:'Minimalist note-taking with markdown support, autosave and cross-device sync.', image:'https://images.unsplash.com/photo-1517842645767-c639042777db?w=600&q=80', liveUrl:'#', featured:false },
+      { id:5, name:'Pulsar API', description:'High-performance REST API gateway with rate limiting, caching and analytics.', image:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&q=80', liveUrl:'#', featured:false },
+      { id:6, name:'Aurora UI Kit', description:'Design system and component library with 200+ accessible React components.', image:'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=600&q=80', liveUrl:'#', featured:false },
+    ];
+  }
+
+  const featured = data.filter(p => p.featured !== false);
+  projects = featured.length ? featured : data;
+  activeIdx = 0;
+  buildCarousel(projects);
+  buildGallery(data);
+}
+
+/* ── BOOT ── */
+window.addEventListener('load', async () => {
+  await loadData();
+  clearInterval(lt);
+  setTimeout(() => {
+    loaderEl.classList.add('hide');
+    document.getElementById('content').classList.add('visible');
+  }, 1200);
+});
+</script>
 </body>
 </html>

@@ -1,20 +1,34 @@
-{
-  "root": ["Ankita", "Anuj", "Ayush", "Games", "Food-nest"],
-
-  "Ankita": [],
-  "Ayush": [],
-
-  "Anuj": ["Anuj_bng", "Anuj_ghy"],
-  "Anuj/Anuj_bng": [],
-  "Anuj/Anuj_ghy": [],
-
-  "Games": ["tic-tac-toe"],
-  "Games/tic-tac-toe": [],
-
-  "Food-nest": ["admin", "booking", "menu","my-bookings"],
-
-  "Food-nest/admin": [],
-  "Food-nest/booking": [],
-  "Food-nest/menu": [], 
-  "Food-nest/my-bookings": []
-}
+[
+  {
+    "id": 1,
+    "name": "Get Her Number",
+    "description": "This tiny website has one simple mission… to steal a smile and maybe your number too 😳📱 No pressure, just a little charm you can’t say no to 💖✨",
+    "image": "/assets/images/ank.jpg",
+    "liveUrl": "https://craunter.vercel.app/Ankita",
+    "featured": true
+  },
+  {
+    "id": 2,
+    "name": "Food Nest",
+    "description": "A fully functional restaurant and hotel website designed to deliver a seamless user experience. The platform features an interactive homepage, easy room booking system, detailed food menu, and exclusive offers section. Built with a modern design approach, it ensures smooth navigation, responsiveness across devices, and an engaging interface for users.",
+    "image": "/assets/images/fn.jpg",
+    "liveUrl": "https://craunter.vercel.app/Food-nest",
+    "featured": true
+  }, 
+  {
+    "id": 3,
+    "name": "Food Nest Admin Page",
+    "description": "An admin panel that enables full control over bookings, customer queries, room availability, and offers with a clean and efficient interface.",
+    "image": "/assets/images/fnam.jpg",
+    "liveUrl": "https://craunter.vercel.app/Food-nest/admin",
+    "featured": true
+  }, 
+  {
+    "id": 4,
+    "name": "Advance Tic-Tac-Toe",
+    "description": "A strategy-based Tic Tac Toe game where players relocate their pieces after initial moves. Built with AI support, scoreboard, move tracking, and a modern glass-style interface, making it more challenging and visually appealing than the classic version.",
+    "image": "/assets/images/ttt.jpg",
+    "liveUrl": "https://craunter.vercel.app/Games/tic-tac-toe",
+    "featured": true
+  }
+]

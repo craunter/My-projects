@@ -3,7 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For You 💖</title>
+<title>For You 💖</title> 
+<!-- Password Script (NO src here) -->
+<script>
+const password = "112233";
+
+while (true) {
+    let input = prompt("Enter password:");
+
+    // If user clicks Cancel
+    if (input === null) {
+        window.location.href = "https://google.com";
+        break;
+    }
+
+    // If correct password
+    if (input === password) {
+        break; // open site normally
+    } else {
+        alert("Incorrect password. Try again.");
+    }
+}
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
