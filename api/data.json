@@ -36,7 +36,7 @@
     "name": "Mines & Diamonds",
     "description": "*Mines & Diamonds* is a fast-paced risk-and-reward game where you uncover hidden diamonds while avoiding deadly mines. Each safe move boosts your multiplier—but one wrong click ends it all. Test your luck, strategy, and nerve in this thrilling, high-stakes experience.",
     "image": "/assets/images/mines.jpg",
-    "liveUrl": "https://craunter.vercel.app/Games/mines",
+    "liveUrl": "https://my-projects-2.vercel.app/",
     "featured": true
   }
 ]
