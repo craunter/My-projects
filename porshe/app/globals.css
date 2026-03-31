@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-porsche-black: #0A0A0A;
+  --color-porsche-red: #D5001C;
+  --color-carbon-gray: #1F1F1F;
+  --color-metal-silver: #C0C0C0;
+  --color-accent-white: #F5F5F5;
+  --color-background: #0A0A0A;
+  --color-foreground: #ffffff;
+  --font-orbitron: var(--font-orbitron);
+  --font-rajdhani: var(--font-rajdhani);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  background: #0A0A0A;
+  color: #ffffff;
+  font-family: var(--font-rajdhani), 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: #D5001C;
+  color: #ffffff;
+}
+
+/* Hide scrollbar but keep functionality */
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+::-webkit-scrollbar-thumb {
+  background: #D5001C;
+  border-radius: 2px;
+}
+
+/* Utility for porsche font */
+.font-orbitron {
+  font-family: var(--font-orbitron), sans-serif;
+  letter-spacing: 0.08em;
+}
+
+.font-rajdhani {
+  font-family: var(--font-rajdhani), sans-serif;
+}

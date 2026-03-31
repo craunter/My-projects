@@ -38,5 +38,13 @@
     "image": "/assets/images/mines.jpg",
     "liveUrl": "https://my-projects-2.vercel.app/",
     "featured": true
+  },
+    {
+    "id": 6,
+    "name": "Porshe 911",
+    "description": "This premium, Next.js-powered scrollytelling experience showcases the Porsche 911 Turbo S. It features a butter-smooth, 240-frame 3D image sequence synchronized to user scroll, accompanied by a dynamic HUD overlay highlighting the car's heritage, exterior design, and blistering performance specs, all wrapped in a sleek, responsive, cinematic aesthetic.",
+    "image": "/assets/images/porsh.jpg",
+    "liveUrl": "https://craunter.vercel.app/porshe",
+    "featured": true
   }
 ]
