@@ -13,7 +13,7 @@ export default function App() {
     setWallet, setBet, halfBet, doubleBet, setMines,
     toggleAuto, toggleAutoTile, clearAutoTiles, updateAutoSettings,
     startAutoSession, stopAutoSession, autoRoundEnd,
-    startGame, revealTile, cashOut, closeWinModal, reset, randomPick,
+    startGame, startNewRound, revealTile, cashOut, closeWinModal, reset, randomPick,
   } = useGameState();
 
   const prevPhase = useRef(state.phase);
@@ -45,53 +45,60 @@ export default function App() {
     }
   }, [state.autoRunning]);
 
-  // ── Auto session: start each round when idle ──────────────────
+  // ── Auto: EFFECT 1 – idle → start game ───────────────────────
+  // Only starts the game; reveal timers are set in Effect 2 below.
   useEffect(() => {
     if (!state.autoRunning || state.phase !== 'idle') return;
+    if (state.autoSelectedTiles.length === 0) return;
 
-    const tiles = state.autoSelectedTiles;
+    autoTimer.current = setTimeout(() => startGame(), 600);
+    return () => clearTimeout(autoTimer.current);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.autoRunning, state.phase]);
+
+  // ── Auto: EFFECT 2 – playing → reveal pre-selected tiles ──────
+  // Fires when phase flips to 'playing' (one render after startGame).
+  // Kept separate so the idle effect cleanup never cancels these timers.
+  useEffect(() => {
+    if (!state.autoRunning || state.phase !== 'playing') return;
+
+    // Snapshot tiles (locked during session, won't change mid-session)
+    const tiles = [...state.autoSelectedTiles];
     if (tiles.length === 0) return;
 
+    // Clear any stale timers from a previous round
     autoRevealTimers.current.forEach(t => clearTimeout(t));
     autoRevealTimers.current = [];
 
-    autoTimer.current = setTimeout(() => {
-      startGame();
-      // Reveal each pre-selected tile in order with delay
-      tiles.forEach((tileIdx, i) => {
-        const t = setTimeout(() => revealTile(tileIdx), 380 + i * 520);
-        autoRevealTimers.current.push(t);
-      });
-      // After last tile, cash out if still playing
-      const cashOutDelay = 380 + tiles.length * 520 + 280;
-      const ct = setTimeout(() => cashOut(), cashOutDelay);
-      autoRevealTimers.current.push(ct);
-    }, 650);
+    // Reveal ALL tiles simultaneously (150ms after game starts)
+    tiles.forEach((tileIdx) => {
+      const t = setTimeout(() => revealTile(tileIdx), 150);
+      autoRevealTimers.current.push(t);
+    });
+    // Cash out 400ms after reveals fire
+    autoRevealTimers.current.push(setTimeout(() => cashOut(), 550));
 
+    // Cleanup: only runs when phase changes away from 'playing'
     return () => {
-      clearTimeout(autoTimer.current);
       autoRevealTimers.current.forEach(t => clearTimeout(t));
       autoRevealTimers.current = [];
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.autoRunning, state.phase]);
 
-  // ── Auto session: handle round end ────────────────────────────
+  // ── Auto: EFFECT 3 – round ended → update stats, start next ───
   useEffect(() => {
     if (!state.autoRunning) return;
     if (state.phase !== 'gameover' && state.phase !== 'cashedout') return;
 
-    // Cancel any in-flight reveal timers
-    autoRevealTimers.current.forEach(t => clearTimeout(t));
-    autoRevealTimers.current = [];
-
     const isWin = state.phase === 'cashedout';
     const roundProfit = state.profit;
 
+    // Short pause so the player can see the result, then advance
     autoTimer.current = setTimeout(() => {
-      autoRoundEnd(isWin, roundProfit);     // adjust bet, check stops → may set autoRunning=false
-      setTimeout(() => reset(), 150);        // return to idle → triggers next round if still running
-    }, 950);
+      autoRoundEnd(isWin, roundProfit); // adjust bet + check stop conditions
+      setTimeout(() => reset(), 180);   // reset to idle → triggers Effect 1 if still running
+    }, 1000);
 
     return () => clearTimeout(autoTimer.current);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -183,6 +190,7 @@ export default function App() {
             startAutoSession={startAutoSession}
             stopAutoSession={stopAutoSession}
             startGame={startGame}
+            startNewRound={startNewRound}
             cashOut={cashOut}
             reset={reset}
             randomPick={randomPick}

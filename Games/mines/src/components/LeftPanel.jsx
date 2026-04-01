@@ -14,7 +14,7 @@ export default function LeftPanel({
   setWallet, setBet, halfBet, doubleBet, setMines,
   toggleAuto, clearAutoTiles, updateAutoSettings,
   startAutoSession, stopAutoSession,
-  startGame, cashOut, reset, randomPick,
+  startGame, startNewRound, cashOut, reset, randomPick,
 }) {
   const {
     phase, wallet, bet, mines, multiplier, openedCount, profit,
@@ -158,26 +158,28 @@ export default function LeftPanel({
         />
       )}
 
-      {/* ── Live profit (manual mode) ──────────────────── */}
+      {/* ── Live profit (manual mode) – FIXED HEIGHT, no layout shift */}
       {!autoMode && (
-        <AnimatePresence>
-          {playing && openedCount > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="stat-card"
-            >
-              <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: 4 }}>Current Profit</div>
+        <div
+          className="stat-card"
+          style={{ minHeight: 70, display: 'flex', flexDirection: 'column', justifyContent: 'center', transition: 'opacity 0.25s' }}
+        >
+          {playing && openedCount > 0 ? (
+            <>
+              <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: 3 }}>Current Profit</div>
               <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#00ff88', textShadow: '0 0 12px rgba(0,255,136,0.5)' }}>
                 +{formatINR(profit.toFixed(2))}
               </div>
               <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: 2 }}>
                 {multiplier.toFixed(3)}× multiplier
               </div>
-            </motion.div>
+            </>
+          ) : (
+            <div style={{ textAlign: 'center', color: '#334155', fontSize: '0.78rem' }}>
+              — place bet to see live profit —
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       )}
 
       {/* ── ACTION BUTTONS ─────────────────────────────── */}
@@ -185,20 +187,16 @@ export default function LeftPanel({
       {/* MANUAL MODE buttons */}
       {!autoMode && (
         <>
-          {phase === 'idle' && (
+          {/* Single "Place Bet" button for ALL non-playing states */}
+          {!playing && (
             <button
               className="btn-primary w-full"
-              onClick={startGame}
-              disabled={bet <= 0 || bet > wallet}
+              onClick={startNewRound}
+              disabled={bet < 0 || bet > wallet}
               style={{ width: '100%' }}
             >
               <Zap size={15} style={{ display: 'inline', marginRight: 6 }} />
               Place Bet
-            </button>
-          )}
-          {(phase === 'gameover' || phase === 'cashedout') && (
-            <button className="btn-primary w-full" onClick={reset} style={{ width: '100%' }}>
-              🔄 New Game
             </button>
           )}
           {playing && (
@@ -232,18 +230,37 @@ export default function LeftPanel({
       {autoMode && (
         <>
           {!autoRunning && phase === 'idle' && (
-            <motion.button
-              className="btn-primary w-full"
-              style={{ width: '100%', opacity: autoSelectedTiles.length === 0 || bet <= 0 ? 0.4 : 1 }}
-              onClick={startAutoSession}
-              disabled={autoSelectedTiles.length === 0 || bet <= 0 || bet > wallet}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <Zap size={15} style={{ display: 'inline', marginRight: 6 }} />
-              Start Auto Bet
-              {autoSelectedTiles.length === 0 && <span style={{ fontSize: '0.75rem', marginLeft: 6, opacity: 0.7 }}>(select tiles first)</span>}
-            </motion.button>
+            <>
+              {/* ── Number of Bets – quick-access always visible ── */}
+              <div>
+                <label style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6 }}>
+                  🎲 Number of Bets
+                </label>
+                <input
+                  className="field-input"
+                  type="number"
+                  min="1"
+                  placeholder="∞ Infinite"
+                  value={autoSettings.maxBets || ''}
+                  onChange={e => updateAutoSettings({ maxBets: e.target.value || null })}
+                />
+                <div style={{ fontSize: '0.7rem', color: '#475569', marginTop: 4 }}>
+                  Leave empty for infinite rounds
+                </div>
+              </div>
+              <motion.button
+                className="btn-primary w-full"
+                style={{ width: '100%', opacity: autoSelectedTiles.length === 0 || bet <= 0 ? 0.4 : 1 }}
+                onClick={startAutoSession}
+                disabled={autoSelectedTiles.length === 0 || bet <= 0 || bet > wallet}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <Zap size={15} style={{ display: 'inline', marginRight: 6 }} />
+                Start Auto Bet
+                {autoSelectedTiles.length === 0 && <span style={{ fontSize: '0.75rem', marginLeft: 6, opacity: 0.7 }}>(select tiles first)</span>}
+              </motion.button>
+            </>
           )}
 
           {autoRunning && (

@@ -1,8 +1,8 @@
 // Game State Management Hook – Advanced Auto Mode
 import { useReducer, useCallback } from 'react';
+import { getMultiplier } from '../utils/multiplier.js';
 
 const GRID_SIZE = 25;
-const HOUSE_EDGE = 0.97;
 
 function placeMines(count) {
   const indices = Array.from({ length: GRID_SIZE }, (_, i) => i);
@@ -17,14 +17,6 @@ function createGrid(mineSet) {
   return Array.from({ length: GRID_SIZE }, (_, i) => ({
     id: i, isMine: mineSet.has(i), revealed: false, isExploding: false,
   }));
-}
-
-function calcNextMultiplier(currentMult, mines, openedCount) {
-  const remaining = GRID_SIZE - openedCount;
-  const safeTilesLeft = remaining - mines;
-  if (safeTilesLeft <= 0) return currentMult;
-  const prob = safeTilesLeft / remaining;
-  return currentMult * (HOUSE_EDGE / prob);
 }
 
 const initialState = {
@@ -73,7 +65,7 @@ function reducer(state, action) {
 
     case 'HALF_BET':
       if (state.phase === 'playing' || state.autoRunning) return state;
-      return { ...state, bet: Math.max(1, Math.floor(state.bet / 2)) };
+      return { ...state, bet: Math.max(0, Math.floor(state.bet / 2)) };
 
     case 'DOUBLE_BET':
       if (state.phase === 'playing' || state.autoRunning) return state;
@@ -111,7 +103,7 @@ function reducer(state, action) {
 
     case 'START_AUTO_SESSION': {
       if (state.autoSelectedTiles.length === 0) return state;
-      if (state.bet <= 0 || state.bet > state.wallet) return state;
+      if (state.bet < 0 || state.bet > state.wallet) return state;
       return {
         ...state,
         autoSelectionLocked: true,
@@ -169,7 +161,7 @@ function reducer(state, action) {
     }
 
     case 'START_GAME': {
-      if (state.bet <= 0 || state.bet > state.wallet) return state;
+      if (state.bet < 0 || state.bet > state.wallet) return state;
       const mineSet = placeMines(state.mines);
       const grid = createGrid(mineSet);
       return {
@@ -205,7 +197,8 @@ function reducer(state, action) {
       }
 
       const newOpenedCount = state.openedCount + 1;
-      const newMultiplier = calcNextMultiplier(state.multiplier, state.mines, state.openedCount);
+      // Direct formula: avoids float accumulation, always matches reference table
+      const newMultiplier = getMultiplier(state.mines, newOpenedCount);
       const currentProfit = (state.bet * newMultiplier) - state.bet;
       const allSafeRevealed = newOpenedCount === GRID_SIZE - state.mines;
       const newGrid = state.grid.map((t, i) => i === idx ? { ...t, revealed: true } : t);
@@ -254,8 +247,16 @@ function reducer(state, action) {
       return {
         ...state, phase: 'idle', grid: [], multiplier: 1, openedCount: 0,
         profit: 0, lastExplodedIdx: -1, showWinModal: false, winAmount: 0,
-        // autoRunning / autoSelectionLocked carry over (managed by AUTO_ROUND_END)
       };
+
+    // Resets any finished game and immediately starts a new one (one dispatch = no flash)
+    case 'START_NEW_ROUND': {
+      const idleState = {
+        ...state, phase: 'idle', grid: [], multiplier: 1, openedCount: 0,
+        profit: 0, lastExplodedIdx: -1, showWinModal: false, winAmount: 0,
+      };
+      return reducer(idleState, { type: 'START_GAME' });
+    }
 
     case 'RANDOM_PICK': {
       if (state.phase !== 'playing') return state;
@@ -286,6 +287,7 @@ export function useGameState() {
   const stopAutoSession = useCallback(() => dispatch({ type: 'STOP_AUTO_SESSION' }), []);
   const autoRoundEnd = useCallback((isWin, profit) => dispatch({ type: 'AUTO_ROUND_END', isWin, profit }), []);
   const startGame = useCallback(() => dispatch({ type: 'START_GAME' }), []);
+  const startNewRound = useCallback(() => dispatch({ type: 'START_NEW_ROUND' }), []);
   const revealTile = useCallback(i => dispatch({ type: 'REVEAL_TILE', index: i }), []);
   const cashOut = useCallback(() => dispatch({ type: 'CASH_OUT' }), []);
   const closeWinModal = useCallback(() => dispatch({ type: 'CLOSE_WIN_MODAL' }), []);
@@ -297,6 +299,6 @@ export function useGameState() {
     setWallet, setBet, halfBet, doubleBet, setMines,
     toggleAuto, toggleAutoTile, clearAutoTiles, updateAutoSettings,
     startAutoSession, stopAutoSession, autoRoundEnd,
-    startGame, revealTile, cashOut, closeWinModal, reset, randomPick,
+    startGame, startNewRound, revealTile, cashOut, closeWinModal, reset, randomPick,
   };
 }
